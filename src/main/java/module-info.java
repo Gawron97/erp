@@ -3,6 +3,6 @@ module git.erp {
     requires javafx.fxml;
 
 
-    opens git.erp to javafx.fxml;
-    exports git.erp;
+    opens app to javafx.fxml;
+    exports app;
 }

@@ -60,7 +60,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>git.erp/git.erp.HelloApplication</mainClass>
+                            <mainClass>git.erp/app.HelloApplication</mainClass>
                         </configuration>
                     </execution>
                 </executions>
