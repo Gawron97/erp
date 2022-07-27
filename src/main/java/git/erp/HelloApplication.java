@@ -12,6 +12,7 @@ public class HelloApplication extends Application {
     private static final String TITLE = "ERP app";
     private static final int WIDTH = 400;
     private static final int LENGTH = 300;
+    private static String s = "sd";
 
     @Override
     public void start(Stage stage) throws IOException {
