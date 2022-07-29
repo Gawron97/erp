@@ -1,6 +1,6 @@
 package app.controller;
 
-import app.dto.UserCredentialsDto;
+import app.dto.OperatorCredentialsDto;
 import app.factory.PopUpFactory;
 import app.rest.Authenticator;
 import app.rest.AuthenticatorImpl;
@@ -13,7 +13,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -61,13 +60,14 @@ public class LoginController implements Initializable {
         String login = loginTextField.getText();
         String password = passwordTextField.getText();
 
-        UserCredentialsDto dto = new UserCredentialsDto();
+        OperatorCredentialsDto dto = new OperatorCredentialsDto();
         dto.setLogin(login);
         dto.setPassword(password);
 
         authenticator.authenticate(dto, authenticationResult -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
+                System.out.println(authenticationResult.toString());
             });
         });
 

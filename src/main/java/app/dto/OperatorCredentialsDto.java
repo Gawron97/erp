@@ -1,14 +1,13 @@
 package app.dto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-public class UserCredentialsDto {
+@Data
+public class OperatorCredentialsDto {
 
-    @Setter @Getter
     private String login;
-
-    @Setter @Getter
     private String password;
 
 

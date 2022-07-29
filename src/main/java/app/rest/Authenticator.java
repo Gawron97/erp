@@ -1,9 +1,9 @@
 package app.rest;
 
-import app.dto.UserCredentialsDto;
+import app.dto.OperatorCredentialsDto;
 
 public interface Authenticator {
 
-    void authenticate(UserCredentialsDto userCredentialsDto, AuthenticationResultHandler authenticationResultHandler);
+    void authenticate(OperatorCredentialsDto operatorCredentialsDto, AuthenticationResultHandler authenticationResultHandler);
 
 }

@@ -1,33 +1,39 @@
 package app.rest;
 
-import app.dto.UserCredentialsDto;
+import app.dto.OperatorAuthenticationResultDto;
+import app.dto.OperatorCredentialsDto;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
 
 public class AuthenticatorImpl implements Authenticator{
 
-    private static final String LOGIN = "user";
-    private static final String PASSWORD = "1234";
+    private static final String AUTHENTICATION_URL = "http://localhost:8080/verify_operator_credentials";
+    private final RestTemplate restTemplate;
 
-    //normalnie dane powinny pochodzic np. z bazy danych(mozna podpiac repozytorium implementujace metody do bazy danych)
+    public AuthenticatorImpl() {
+        this.restTemplate = new RestTemplate();
+    }
 
     @Override
-    public void authenticate(UserCredentialsDto userCredentialsDto, AuthenticationResultHandler authenticationResultHandler) {
-        Runnable authenticationTask = createAuthenticationTask(userCredentialsDto, authenticationResultHandler);
+    public void authenticate(OperatorCredentialsDto operatorCredentialsDto, AuthenticationResultHandler authenticationResultHandler) {
+        Runnable authenticationTask = () -> {
+            processAuthentication(operatorCredentialsDto, authenticationResultHandler);
+        };
         Thread authenticationThread = new Thread(authenticationTask);
         authenticationThread.setDaemon(true); // po zamknieciu aplikacji ten watek zostanie zamkniety
         authenticationThread.start();
 
-
     }
 
-    private Runnable createAuthenticationTask(UserCredentialsDto userCredentialsDto, AuthenticationResultHandler authenticationResultHandler) {
-        return () -> {
-            try {
-                Thread.sleep(2000);
-                boolean bool = userCredentialsDto.getLogin().equals(LOGIN) && userCredentialsDto.getPassword().equals(PASSWORD);
-                authenticationResultHandler.handle(bool);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        };
+    private void processAuthentication(OperatorCredentialsDto operatorCredentialsDto, AuthenticationResultHandler authenticationResultHandler) {
+
+        ResponseEntity<OperatorAuthenticationResultDto> operatorResponse = restTemplate.postForEntity(AUTHENTICATION_URL,
+                operatorCredentialsDto, OperatorAuthenticationResultDto.class);
+
+        System.out.println(operatorCredentialsDto.getLogin());
+
+        authenticationResultHandler.handle(operatorResponse.getBody());
+
     }
 }
