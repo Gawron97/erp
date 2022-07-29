@@ -6,19 +6,25 @@ import app.rest.Authenticator;
 import app.rest.AuthenticatorImpl;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
 
-    private PopUpFactory popUpFactory;
+    private static final String APP_FXML = "/fxml/app.fxml";
+    private static final String APP_TITLE = "ERP System";
 
+    private PopUpFactory popUpFactory;
     private Authenticator authenticator;
 
     @FXML
@@ -67,12 +73,33 @@ public class LoginController implements Initializable {
         authenticator.authenticate(dto, authenticationResult -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
-                System.out.println(authenticationResult.toString());
+                if(authenticationResult.isAuthenticated())
+                    openAppAndCloseLoginPage();
+                else
+                    showIncorrectCredentialsMessage();
             });
         });
 
 
+    }
 
+    private void showIncorrectCredentialsMessage() {
+        System.out.println("zle dane");
+    }
+
+    private void openAppAndCloseLoginPage() {
+        Stage appstage = new Stage();
+        Parent appRoot = null;
+        try {
+            appRoot = FXMLLoader.load(getClass().getResource(APP_FXML));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Scene scene = new Scene(appRoot, 1024, 768);
+        appstage.setScene(scene);
+        appstage.setTitle(APP_TITLE);
+        appstage.show();
+        getStage().close();
     }
 
     private void initializeExitButton(){

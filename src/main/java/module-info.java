@@ -14,4 +14,6 @@ module git.erp {
     opens app.dto to javafx.fxml;
     exports app.rest;
     opens app.rest to javafx.fxml;
+    exports app.table;
+    opens app.table to javafx.base;
 }
