@@ -1,0 +1,16 @@
+.background{
+    -fx-background-color: -fx-primary-morski;
+    -fx-border-color: -fx-primary-blue;
+}
+
+.employee-button{
+    -fx-text-fill: -fx-grey;
+    -fx-font-size: 15px;
+    -fx-background-color: -fx-primary-purple;
+    -fx-border-color: -fx-border-green;
+    -fx-background-radius: 0;
+}
+
+.employee-button:hover{
+    -fx-background-color: -fx-secondary-purple;
+}

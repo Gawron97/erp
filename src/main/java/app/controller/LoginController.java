@@ -92,11 +92,11 @@ public class LoginController implements Initializable {
         Parent appRoot = null;
         try {
             appRoot = FXMLLoader.load(getClass().getResource(APP_FXML));
+            Scene scene = new Scene(appRoot, 1024, 768);
+            appstage.setScene(scene);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Scene scene = new Scene(appRoot, 1024, 768);
-        appstage.setScene(scene);
         appstage.setTitle(APP_TITLE);
         appstage.show();
         getStage().close();

@@ -1,0 +1,35 @@
+.background{
+    -fx-background-color: -fx-primary-morski;
+    -fx-border-color: -fx-primary-blue;
+}
+
+.title{
+    -fx-font-size: 20px;
+    -fx-text-fill: -fx-primary-orange;
+}
+
+.cancel-button{
+    -fx-background-color: -fx-primary-red;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-alignmentL: center;
+}
+
+.cancel-button:hover{
+    -fx-background-color: -fx-secondary-red;
+}
+
+.save-button{
+    -fx-background-color: -fx-primary-green;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-alignmentL: center;
+}
+
+.save-button:hover{
+    -fx-background-color: -fx-secondary-green;
+}
+
+.text{
+    -fx-text-fill: -fx-text-purple;
+}

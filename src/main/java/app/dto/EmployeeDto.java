@@ -10,4 +10,13 @@ public class EmployeeDto {
     private String surname;
     private String salary;
 
+    public static EmployeeDto of(String name, String surname, String salary){
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.name = name;
+        employeeDto.surname = surname;
+        employeeDto.salary = salary;
+
+        return employeeDto;
+    }
+
 }

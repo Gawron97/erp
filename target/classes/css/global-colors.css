@@ -3,9 +3,20 @@
     -fx-secondary-red: #FF4A3C;
     -fx-primary-blue: #003366;
     -fx-secondary-blue: #1A4D80;
-    -fx-primary-background: #1367b5;
-    -fx-secondary-background: #64aaec;
-    -fx-primary-green: #05a632;
-    -fx-primary-purple: #810aa6;
+    -fx-primary-green: #0FF020;
+    -fx-secondary-green: #87f78f;
+    -fx-dark-green: #1d9081;
+    -fx-primary-purple: #98789b;
+    -fx-secondary-purple: #a285a5;
+    -fx-text-purple: #b259a5;
     -fx-border-blue: #14049e;
+    -fx-border-green: #88bf41;
+    -fx-primary-orange: #fe864c;
+    -fx-bright-yellow: #fdcf58;
+    -fx-primary-morski: #1d9081;
+    -fx-secondary-morski: #339b8d;
+    -fx-grey: #cacaf9;
+    -fx-primary-red: #b20000;
+    -fx-secondary-red: #b91919;
+
 }

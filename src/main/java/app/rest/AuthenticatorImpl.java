@@ -2,6 +2,7 @@ package app.rest;
 
 import app.dto.OperatorAuthenticationResultDto;
 import app.dto.OperatorCredentialsDto;
+import app.handler.AuthenticationResultHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,17 +29,11 @@ public class AuthenticatorImpl implements Authenticator{
 
     private void processAuthentication(OperatorCredentialsDto operatorCredentialsDto, AuthenticationResultHandler authenticationResultHandler) {
 
-//        ResponseEntity<OperatorAuthenticationResultDto> operatorResponse = restTemplate.postForEntity(AUTHENTICATION_URL,
-//                operatorCredentialsDto, OperatorAuthenticationResultDto.class);
+        ResponseEntity<OperatorAuthenticationResultDto> operatorResponse = restTemplate.postForEntity(AUTHENTICATION_URL,
+                operatorCredentialsDto, OperatorAuthenticationResultDto.class);
 
-        OperatorAuthenticationResultDto dto = new OperatorAuthenticationResultDto();
-        dto.setAuthenticated(true);
-        dto.setName("Pawel");
-        dto.setSurname("Gruz");
-        dto.setIdOperator(1);
-        System.out.println(operatorCredentialsDto.getLogin());
 
-        authenticationResultHandler.handle(dto);
+        authenticationResultHandler.handle(operatorResponse.getBody());
 
     }
 }

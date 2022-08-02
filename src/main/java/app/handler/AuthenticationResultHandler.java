@@ -1,4 +1,4 @@
-package app.rest;
+package app.handler;
 
 import app.dto.OperatorAuthenticationResultDto;
 
