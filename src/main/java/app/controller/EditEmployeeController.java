@@ -2,6 +2,7 @@ package app.controller;
 
 import app.dto.EmployeeDto;
 import app.factory.PopUpFactory;
+import app.handler.EmployeeLoadedHandler;
 import app.rest.EmployeeRestClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -14,10 +15,10 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class AddEmployeeController implements Initializable {
+public class EditEmployeeController implements Initializable {
 
-    private PopUpFactory popUpFactory;
     private EmployeeRestClient employeeRestClient;
+    private PopUpFactory popUpFactory;
 
     @FXML
     private BorderPane borderPane;
@@ -32,27 +33,31 @@ public class AddEmployeeController implements Initializable {
     private TextField salaryTextField;
 
     @FXML
-    private Button saveButton;
+    private Button editButton;
 
     @FXML
     private TextField surnameTextField;
 
-    public AddEmployeeController(){
-        popUpFactory = new PopUpFactory();
+    private Integer idEmployee;
+
+    public EditEmployeeController(){
         employeeRestClient = new EmployeeRestClient();
+        popUpFactory = new PopUpFactory();
     }
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        initializeCancelButton();
         initializeSaveButton();
+        initializeCancelButton();
+    }
+
+    private void initializeCancelButton() {
+        cancelButton.setOnAction(actionEvent -> getStage().close());
     }
 
     private void initializeSaveButton() {
-        saveButton.setOnAction(actionEvent -> {
-            saveNewEmployee();
-        });
+        editButton.setOnAction(actionEvent -> saveNewEmployee());
     }
 
     private void saveNewEmployee() {
@@ -64,6 +69,7 @@ public class AddEmployeeController implements Initializable {
         String salary = salaryTextField.getText();
 
         EmployeeDto employeeDto = EmployeeDto.of(name, surname, salary);
+        employeeDto.setIdEmployee(idEmployee);
 
         employeeRestClient.saveEmployee(employeeDto, () -> {
             Platform.runLater(() -> {
@@ -77,11 +83,18 @@ public class AddEmployeeController implements Initializable {
 
     }
 
-    private void initializeCancelButton() {
-        cancelButton.setOnAction(actionEvent -> {
-            getStage().close();
+    public void loadEmployeeData(Integer idEmployee, EmployeeLoadedHandler handler){
+        employeeRestClient.loadEmployeeData(idEmployee, employeeDto -> {
+            Platform.runLater(() -> {
+                this.idEmployee = employeeDto.getIdEmployee();
+                nameTextField.setText(employeeDto.getName());
+                surnameTextField.setText(employeeDto.getSurname());
+                salaryTextField.setText(employeeDto.getSalary());
+                handler.handle();
+            });
         });
     }
+
 
     private Stage getStage(){
         return ((Stage) borderPane.getScene().getWindow());

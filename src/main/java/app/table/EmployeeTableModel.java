@@ -5,18 +5,24 @@ import javafx.beans.property.SimpleStringProperty;
 
 public class EmployeeTableModel {
 
+    private final Integer idEmployee;
     private final SimpleStringProperty name;
     private final SimpleStringProperty surname;
     private final SimpleStringProperty salary;
 
-    public EmployeeTableModel(String name, String surname, String salary){
+    public EmployeeTableModel(Integer idEmployee, String name, String surname, String salary){
+        this.idEmployee = idEmployee;
         this.name = new SimpleStringProperty(name);
         this.surname = new SimpleStringProperty(surname);
         this.salary = new SimpleStringProperty(salary);
     }
 
     public static EmployeeTableModel of(EmployeeDto employeeDto){
-        return new EmployeeTableModel(employeeDto.getName(), employeeDto.getSurname(), employeeDto.getSalary());
+        return new EmployeeTableModel(employeeDto.getIdEmployee(), employeeDto.getName(), employeeDto.getSurname(), employeeDto.getSalary());
+    }
+
+    public Integer getIdEmployee() {
+        return idEmployee;
     }
 
     public String getName() {

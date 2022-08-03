@@ -110,6 +110,5 @@ public class LoginController implements Initializable {
 
     private Stage getStage(){
         return ((Stage) loginAnchorPane.getScene().getWindow());
-
     }
 }
