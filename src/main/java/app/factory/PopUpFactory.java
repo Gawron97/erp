@@ -16,6 +16,8 @@ public class PopUpFactory {
     public Stage createWaitingPopUp(String text){
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UNDECORATED);
+        stage.initModality(Modality.APPLICATION_MODAL);
+
         VBox vBox = new VBox();
         vBox.setStyle(waitingPopUpStyle());
         vBox.setAlignment(Pos.CENTER);
@@ -29,7 +31,6 @@ public class PopUpFactory {
         vBox.getChildren().add(progressBar);
 
         stage.setScene(new Scene(vBox, 200, 100));
-        stage.initModality(Modality.APPLICATION_MODAL);
 
         return stage;
     }

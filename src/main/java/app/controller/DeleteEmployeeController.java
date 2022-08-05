@@ -1,8 +1,7 @@
 package app.controller;
 
 import app.factory.PopUpFactory;
-import app.handler.EmployeeLoadedHandler;
-import app.rest.EmployeeRestClient;
+import app.rest.EmployeesRestClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,7 +14,7 @@ import java.util.ResourceBundle;
 
 public class DeleteEmployeeController implements Initializable {
 
-    private EmployeeRestClient employeeRestClient;
+    private EmployeesRestClient employeesRestClient;
     private PopUpFactory popUpFactory;
 
     @FXML
@@ -30,7 +29,7 @@ public class DeleteEmployeeController implements Initializable {
     private Integer idEmployee;
 
     public DeleteEmployeeController(){
-        employeeRestClient = new EmployeeRestClient();
+        employeesRestClient = new EmployeesRestClient();
         popUpFactory = new PopUpFactory();
     }
 
@@ -52,7 +51,7 @@ public class DeleteEmployeeController implements Initializable {
         Stage waitingPopUp = popUpFactory.createWaitingPopUp("Usuwamy pracownika");
         waitingPopUp.show();
 
-        employeeRestClient.deleteEmployee(idEmployee, () -> {
+        employeesRestClient.deleteEmployee(idEmployee, () -> {
             Platform.runLater(() -> {
                 Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal usuniety", () -> getStage().close());
                 waitingPopUp.close();

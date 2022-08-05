@@ -1,7 +1,7 @@
 package app.controller;
 
 import app.factory.PopUpFactory;
-import app.rest.EmployeeRestClient;
+import app.rest.EmployeesRestClient;
 import app.table.EmployeeTableModel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -14,7 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -24,9 +23,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
-public class EmployeeController implements Initializable {
+public class EmployeesController implements Initializable {
 
-    private final EmployeeRestClient employeeRestClient;
+    private final EmployeesRestClient employeesRestClient;
     private static final String ADD_FXML = "/fxml/add-employee.fxml";
     private static final String VIEW_FXML = "/fxml/view-employee.fxml";
     private static final String EDIT_FXML = "/fxml/edit-employee.fxml";
@@ -51,8 +50,8 @@ public class EmployeeController implements Initializable {
     @FXML
     private TableView<EmployeeTableModel> employeeTableView;
 
-    public EmployeeController(){
-        employeeRestClient = new EmployeeRestClient();
+    public EmployeesController(){
+        employeesRestClient = new EmployeesRestClient();
         popUpFactory = new PopUpFactory();
     }
 
@@ -200,7 +199,7 @@ public class EmployeeController implements Initializable {
 
         Stage stage = popUpFactory.createWaitingPopUp("Pobieranie danych o pracownikach");
         stage.show();
-        employeeRestClient.loadEmployees((employees) -> {
+        employeesRestClient.loadEmployees(employees -> {
             Platform.runLater(() -> {
                 data.clear();
                 data.addAll(employees.stream().map(employeeDto -> EmployeeTableModel.of(employeeDto)).collect(Collectors.toList()));

@@ -12,14 +12,14 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 
-public class EmployeeRestClient {
+public class EmployeesRestClient {
 
     private static final String EMPLOYEES_URL = "http://localhost:8080/employees";
     private static final String EMPLOYEES_ACTION_URL = "http://localhost:8080/employees";
 
     private final RestTemplate restTemplate;
 
-    public EmployeeRestClient(){
+    public EmployeesRestClient(){
         restTemplate = new RestTemplate();
     }
 

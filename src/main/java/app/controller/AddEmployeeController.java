@@ -2,7 +2,7 @@ package app.controller;
 
 import app.dto.EmployeeDto;
 import app.factory.PopUpFactory;
-import app.rest.EmployeeRestClient;
+import app.rest.EmployeesRestClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
 public class AddEmployeeController implements Initializable {
 
     private PopUpFactory popUpFactory;
-    private EmployeeRestClient employeeRestClient;
+    private EmployeesRestClient employeesRestClient;
 
     @FXML
     private BorderPane borderPane;
@@ -39,7 +39,7 @@ public class AddEmployeeController implements Initializable {
 
     public AddEmployeeController(){
         popUpFactory = new PopUpFactory();
-        employeeRestClient = new EmployeeRestClient();
+        employeesRestClient = new EmployeesRestClient();
     }
 
 
@@ -65,7 +65,7 @@ public class AddEmployeeController implements Initializable {
 
         EmployeeDto employeeDto = EmployeeDto.of(name, surname, salary);
 
-        employeeRestClient.saveEmployee(employeeDto, () -> {
+        employeesRestClient.saveEmployee(employeeDto, () -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
                 Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal zapisany do bazy danych :)", () -> {

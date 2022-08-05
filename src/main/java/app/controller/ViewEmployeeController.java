@@ -1,7 +1,7 @@
 package app.controller;
 
 import app.handler.EmployeeLoadedHandler;
-import app.rest.EmployeeRestClient;
+import app.rest.EmployeesRestClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
 
 public class ViewEmployeeController implements Initializable {
 
-    private EmployeeRestClient employeeRestClient;
+    private EmployeesRestClient employeesRestClient;
 
     @FXML
     private BorderPane borderPane;
@@ -33,7 +33,7 @@ public class ViewEmployeeController implements Initializable {
     private TextField surnameTextField;
 
     public ViewEmployeeController(){
-        employeeRestClient = new EmployeeRestClient();
+        employeesRestClient = new EmployeesRestClient();
     }
 
 
@@ -47,7 +47,7 @@ public class ViewEmployeeController implements Initializable {
     }
 
     public void loadEmployeeData(Integer idEmployee, EmployeeLoadedHandler handler){
-        employeeRestClient.loadEmployeeData(idEmployee, employeeDto -> {
+        employeesRestClient.loadEmployeeData(idEmployee, employeeDto -> {
             Platform.runLater(() -> {
                 nameTextField.setText(employeeDto.getName());
                 surnameTextField.setText(employeeDto.getSurname());

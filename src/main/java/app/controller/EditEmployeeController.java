@@ -3,7 +3,7 @@ package app.controller;
 import app.dto.EmployeeDto;
 import app.factory.PopUpFactory;
 import app.handler.EmployeeLoadedHandler;
-import app.rest.EmployeeRestClient;
+import app.rest.EmployeesRestClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
 
 public class EditEmployeeController implements Initializable {
 
-    private EmployeeRestClient employeeRestClient;
+    private EmployeesRestClient employeesRestClient;
     private PopUpFactory popUpFactory;
 
     @FXML
@@ -41,7 +41,7 @@ public class EditEmployeeController implements Initializable {
     private Integer idEmployee;
 
     public EditEmployeeController(){
-        employeeRestClient = new EmployeeRestClient();
+        employeesRestClient = new EmployeesRestClient();
         popUpFactory = new PopUpFactory();
     }
 
@@ -71,7 +71,7 @@ public class EditEmployeeController implements Initializable {
         EmployeeDto employeeDto = EmployeeDto.of(name, surname, salary);
         employeeDto.setIdEmployee(idEmployee);
 
-        employeeRestClient.saveEmployee(employeeDto, () -> {
+        employeesRestClient.saveEmployee(employeeDto, () -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
                 Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal zapisany do bazy danych :)", () -> {
@@ -84,7 +84,7 @@ public class EditEmployeeController implements Initializable {
     }
 
     public void loadEmployeeData(Integer idEmployee, EmployeeLoadedHandler handler){
-        employeeRestClient.loadEmployeeData(idEmployee, employeeDto -> {
+        employeesRestClient.loadEmployeeData(idEmployee, employeeDto -> {
             Platform.runLater(() -> {
                 this.idEmployee = employeeDto.getIdEmployee();
                 nameTextField.setText(employeeDto.getName());
