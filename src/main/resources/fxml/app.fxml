@@ -17,9 +17,9 @@
         <menus>
           <Menu mnemonicParsing="false" text="select">
             <items>
-                  <MenuItem fx:id="employeesModuleMI" mnemonicParsing="false" text="Employees Module" />
-                  <MenuItem fx:id="warehousesModuleMI" mnemonicParsing="false" text="Warehouses Module" />
+                  <MenuItem fx:id="employeeModuleMI" mnemonicParsing="false" text="Employee Module" />
                   <MenuItem fx:id="warehouseModuleMI" mnemonicParsing="false" text="Warehouse Module" />
+                  <MenuItem fx:id="itemModuleMI" mnemonicParsing="false" text="Item Module" />
                   <SeparatorMenuItem mnemonicParsing="false" />
               <MenuItem fx:id="logoutMI" mnemonicParsing="false" text="Logout" />
                   <MenuItem fx:id="exitMI" mnemonicParsing="false" text="Exit" />

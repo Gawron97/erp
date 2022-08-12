@@ -4,7 +4,7 @@ import app.dto.WarehouseDto;
 
 import java.util.List;
 
-public interface LoadWarehousesHandler {
+public interface LoadWarehouseItemsHandler {
 
     void handle(List<WarehouseDto> list);
 

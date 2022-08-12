@@ -2,13 +2,16 @@ package app.dto;
 
 import lombok.Data;
 
-@Data
-public class ItemDto {
+import java.util.List;
 
-    private Integer idItem;
+@Data
+public class ItemSumDto {
+
+    private Integer id;
     private String name;
     private double quantity;
     private String quantityType;
-    private String warehouseName;
+    private List<String> warehouseNames;
+
 
 }

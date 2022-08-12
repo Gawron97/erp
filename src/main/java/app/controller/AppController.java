@@ -16,9 +16,9 @@ import java.util.ResourceBundle;
 
 public class AppController implements Initializable {
 
-    private static final String URL_EMPLOYEE = "/fxml/employees.fxml";
-    private static final String URL_WAREHOUSES = "/fxml/warehouses.fxml";
+    private static final String URL_EMPLOYEE = "/fxml/employee.fxml";
     private static final String URL_WAREHOUSE = "/fxml/warehouse.fxml";
+    private static final String URL_ITEM = "/fxml/item.fxml";
     private static final String URL_LOGIN = "/fxml/login.fxml";
 
     @FXML
@@ -28,7 +28,7 @@ public class AppController implements Initializable {
     private BorderPane borderPane;
 
     @FXML
-    private MenuItem employeesModuleMI;
+    private MenuItem employeeModuleMI;
 
     @FXML
     private MenuItem exitMI;
@@ -37,10 +37,10 @@ public class AppController implements Initializable {
     private MenuItem logoutMI;
 
     @FXML
-    private MenuItem warehousesModuleMI;
+    private MenuItem warehouseModuleMI;
 
     @FXML
-    private MenuItem warehouseModuleMI;
+    private MenuItem itemModuleMI;
 
 
     public AppController(){
@@ -55,31 +55,31 @@ public class AppController implements Initializable {
 
     private void initializeMenuItems() {
         initializeEmployeeModuleMI();
-        initializeWarehousesModuleMI();
         initializeWarehouseModuleMI();
+        initializeItemModuleMI();
         initializeExitMI();
         initializeLogoutMI();
+    }
+
+
+    private void initializeLogoutMI() {
+        logoutMI.setOnAction(actionEvent -> logout());
+    }
+
+    private void initializeExitMI() {
+        exitMI.setOnAction(actionEvent -> getStage().close());
+    }
+
+    private void initializeItemModuleMI() {
+        itemModuleMI.setOnAction(actionEvent -> loadModule(URL_ITEM));
     }
 
     private void initializeWarehouseModuleMI() {
         warehouseModuleMI.setOnAction(actionEvent -> loadModule(URL_WAREHOUSE));
     }
 
-    private void initializeLogoutMI() {
-        logoutMI.setOnAction(actionEvent -> logout());
-    }
-
-
-    private void initializeExitMI() {
-        exitMI.setOnAction(actionEvent -> getStage().close());
-    }
-
-    private void initializeWarehousesModuleMI() {
-        warehousesModuleMI.setOnAction(actionEvent -> loadModule(URL_WAREHOUSES));
-    }
-
     private void initializeEmployeeModuleMI() {
-        employeesModuleMI.setOnAction(actionEvent -> loadModule(URL_EMPLOYEE));
+        employeeModuleMI.setOnAction(actionEvent -> loadModule(URL_EMPLOYEE));
     }
 
     private void loadDefault(){
