@@ -2,6 +2,7 @@ package app.controller;
 
 import app.dto.WarehouseDto;
 import app.factory.PopUpFactory;
+import app.handler.WarehouseViewButtonInitializer;
 import app.rest.WarehouseRestClient;
 import app.table.WarehouseTableModel;
 import javafx.application.Platform;
@@ -61,38 +62,13 @@ public class WarehouseController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeTableView();
-        initializeViewButton();
 
     }
 
-    private void initializeViewButton() {
+    public void initializeViewButton(WarehouseViewButtonInitializer initializer) {
         viewButton.setOnAction(actionEvent -> {
             WarehouseTableModel selectedWarehouse = warehousesTV.getSelectionModel().getSelectedItem();
-            try{
-                Stage warehouseView = new Stage();
-                warehouseView.initModality(Modality.APPLICATION_MODAL);
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEW_WAREHOUSE));
-
-                Scene scene = new Scene(loader.load(), 1024, 768);
-                warehouseView.setScene(scene);
-
-                Stage waitingPopUp = popUpFactory.createWaitingPopUp("pobieramy dane o magazynie");
-                waitingPopUp.show();
-
-                ViewWarehouseController viewController = loader.<ViewWarehouseController>getController();
-
-                viewController.loadData(selectedWarehouse, () -> {
-                    waitingPopUp.close();
-                    warehouseView.show();
-                });
-
-                
-
-
-            }catch (IOException e){
-                e.printStackTrace();
-            }
+            initializer.init(selectedWarehouse);
         });
     }
 

@@ -4,6 +4,7 @@ import app.dto.ItemDto;
 import app.dto.WarehouseDto;
 import app.factory.PopUpFactory;
 import app.handler.ItemsLoadedHandler;
+import app.handler.WarehouseViewExitInitializer;
 import app.rest.WarehouseRestClient;
 import app.table.ItemTableModel;
 import app.table.WarehouseTableModel;
@@ -12,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -35,6 +37,9 @@ public class ViewWarehouseController implements Initializable {
 
     @FXML
     private TableView<ItemTableModel> itemsTV;
+
+    @FXML
+    private Button exitButton;
 
     @FXML
     private TextField nameTF;
@@ -87,15 +92,32 @@ public class ViewWarehouseController implements Initializable {
                 List<ItemDto> itemDtoList = warehouseDto.getItems();
                 data.addAll(itemDtoList.stream().map(itemDto -> ItemTableModel.of(itemDto)).collect(Collectors.toList()));
                 itemsTV.setItems(data);
+                fillWarehouseData(warehouseDto);
                 handler.handle();
             });
 
         });
+    }
 
+    private void fillWarehouseData(WarehouseDto warehouse) {
+        nameTF.setEditable(false);
+        cityTF.setEditable(false);
+        streetTF.setEditable(false);
+        streetNumberTF.setEditable(false);
+        countryTF.setEditable(false);
+        numberOfItemsTF.setEditable(false);
+
+        nameTF.setText(warehouse.getName());
+        cityTF.setText(warehouse.getAddressDto().getCity());
+        streetTF.setText(warehouse.getAddressDto().getStreet());
+        streetNumberTF.setText(warehouse.getAddressDto().getStreetNumber().toString());
+        countryTF.setText(warehouse.getAddressDto().getCountryDto().getCountry());
+        numberOfItemsTF.setText(Integer.toString(warehouse.getItems().size()));
 
     }
 
-    private void fillWarehouseData(WarehouseTableModel warehouse) {
+    public void initializeExitButton(WarehouseViewExitInitializer initializer){
+        exitButton.setOnAction(actionEvent -> initializer.init());
 
     }
 

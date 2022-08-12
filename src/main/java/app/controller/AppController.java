@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.factory.PopUpFactory;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -18,8 +19,11 @@ public class AppController implements Initializable {
 
     private static final String URL_EMPLOYEE = "/fxml/employee.fxml";
     private static final String URL_WAREHOUSE = "/fxml/warehouse.fxml";
+    private static final String URL_WAREHOUSE_VIEW = "/fxml/view-warehouse.fxml";
     private static final String URL_ITEM = "/fxml/item.fxml";
     private static final String URL_LOGIN = "/fxml/login.fxml";
+
+    private PopUpFactory popUpFactory;
 
     @FXML
     private Pane appPain;
@@ -44,7 +48,7 @@ public class AppController implements Initializable {
 
 
     public AppController(){
-
+        popUpFactory = new PopUpFactory();
     }
 
     @Override
@@ -75,7 +79,7 @@ public class AppController implements Initializable {
     }
 
     private void initializeWarehouseModuleMI() {
-        warehouseModuleMI.setOnAction(actionEvent -> loadModule(URL_WAREHOUSE));
+        warehouseModuleMI.setOnAction(actionEvent -> loadWarehouseModule(URL_WAREHOUSE));
     }
 
     private void initializeEmployeeModuleMI() {
@@ -99,6 +103,47 @@ public class AppController implements Initializable {
         } catch (IOException e) {
             throw new RuntimeException("nie mozna zaladowac pliku fxml" + URL_LOGIN);
         }
+    }
+
+    private void loadWarehouseModule(String urlWarehouse) {
+
+        appPain.getChildren().clear();
+
+        try{
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(urlWarehouse));
+            BorderPane warehouseModule = new BorderPane(loader.load());
+            appPain.getChildren().add(warehouseModule);
+
+            WarehouseController warehouseController = loader.getController();
+
+            warehouseController.initializeViewButton(warehouseTableModel -> {
+                try{
+                    appPain.getChildren().clear();
+                    FXMLLoader loader2 = new FXMLLoader(getClass().getResource(URL_WAREHOUSE_VIEW));
+                    BorderPane itemsOfWarehouse = new BorderPane(loader2.load());
+                    appPain.getChildren().add(itemsOfWarehouse);
+
+                    Stage waitingPopUp = popUpFactory.createWaitingPopUp("Ladujemy dane o przedmiotach i magazynie");
+                    ViewWarehouseController viewWarehouseController = loader2.getController();
+                    waitingPopUp.show();
+                    viewWarehouseController.loadData(warehouseTableModel, () -> {
+                        waitingPopUp.close();
+                    });
+                    viewWarehouseController.initializeExitButton(() -> {
+                        loadWarehouseModule(URL_WAREHOUSE);
+                    });
+
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+
+            });
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
     }
 
     private void loadModule(String moduleUrl){
