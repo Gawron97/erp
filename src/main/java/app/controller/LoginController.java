@@ -34,6 +34,9 @@ public class LoginController implements Initializable {
     private Button loginButton;
 
     @FXML
+    private Button registerButton;
+
+    @FXML
     private AnchorPane loginAnchorPane;
 
     @FXML
@@ -51,6 +54,13 @@ public class LoginController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeExitButton();
         initializeLoginButton();
+        initializeRegisterButton();
+    }
+
+    private void initializeRegisterButton() {
+        registerButton.setOnAction(actionEvent -> {
+
+        });
     }
 
     private void initializeLoginButton() {

@@ -11,4 +11,15 @@ public class ItemDto {
     private String quantityType;
     private String warehouseName;
 
+    public static ItemDto of(String name, double quantity, String quantityType, String warehouseName){
+        ItemDto dto = new ItemDto();
+
+        dto.name = name;
+        dto.quantity = quantity;
+        dto.quantityType = quantityType;
+        dto.warehouseName = warehouseName;
+
+        return dto;
+    }
+
 }

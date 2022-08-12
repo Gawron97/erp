@@ -28,6 +28,7 @@
                </children>
             </HBox>
             <Button fx:id="loginButton" mnemonicParsing="false" styleClass="login-button" text="Zaloguj się" />
+            <Button fx:id="registerButton" mnemonicParsing="false" styleClass="login-button" text="Przejdz do rejestracji" />
          </children>
       </VBox>
    </children>

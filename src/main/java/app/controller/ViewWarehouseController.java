@@ -2,7 +2,6 @@ package app.controller;
 
 import app.dto.ItemDto;
 import app.dto.WarehouseDto;
-import app.factory.PopUpFactory;
 import app.handler.ItemsLoadedHandler;
 import app.handler.WarehouseViewExitInitializer;
 import app.rest.WarehouseRestClient;
@@ -12,13 +11,19 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -26,7 +31,8 @@ import java.util.stream.Collectors;
 
 public class ViewWarehouseController implements Initializable {
 
-    private PopUpFactory popUpFactory;
+    private static final String ADD_FXML = "/fxml/add-item.fxml";
+
     private WarehouseRestClient warehouseRestClient;
 
     @FXML
@@ -42,6 +48,9 @@ public class ViewWarehouseController implements Initializable {
     private Button exitButton;
 
     @FXML
+    private Button addItemButton;
+
+    @FXML
     private TextField nameTF;
 
     @FXML
@@ -54,16 +63,39 @@ public class ViewWarehouseController implements Initializable {
     private TextField streetTF;
 
     public ViewWarehouseController(){
-        popUpFactory = new PopUpFactory();
         warehouseRestClient = new WarehouseRestClient();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        initializeWarehouseTV();
+        initializeItemsTV();
+        initializeAddButton();
     }
 
-    private void initializeWarehouseTV() {
+    private void initializeAddButton() {
+        addItemButton.setOnAction(actionEvent -> {
+            try{
+                Stage addStage = new Stage();
+                addStage.initStyle(StageStyle.UNDECORATED);
+                addStage.initModality(Modality.APPLICATION_MODAL);
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(ADD_FXML));
+                Scene scene = new Scene(loader.load(), 500, 400);
+                addStage.setScene(scene);
+
+                AddItemController addItemController = loader.getController();
+                addItemController.loadWarehouse(nameTF.getText());
+
+                addStage.show();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+
+
+        });
+    }
+
+    private void initializeItemsTV() {
 
         itemsTV.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
@@ -118,7 +150,6 @@ public class ViewWarehouseController implements Initializable {
 
     public void initializeExitButton(WarehouseViewExitInitializer initializer){
         exitButton.setOnAction(actionEvent -> initializer.init());
-
     }
 
 
