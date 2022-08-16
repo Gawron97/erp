@@ -2,7 +2,7 @@ package app.controller;
 
 import app.dto.ItemDto;
 import app.dto.WarehouseDto;
-import app.handler.ItemsLoadedHandler;
+import app.handler.ProcessFinishedHandler;
 import app.handler.WarehouseViewExitInitializer;
 import app.rest.WarehouseRestClient;
 import app.table.ItemTableModel;
@@ -115,7 +115,7 @@ public class ViewWarehouseController implements Initializable {
 
     }
 
-    public void loadData(WarehouseTableModel warehouse, ItemsLoadedHandler handler){
+    public void loadData(WarehouseTableModel warehouse, ProcessFinishedHandler handler){
         ObservableList<ItemTableModel> data = FXCollections.observableArrayList();
 
 

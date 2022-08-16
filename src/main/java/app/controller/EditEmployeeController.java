@@ -2,7 +2,7 @@ package app.controller;
 
 import app.dto.EmployeeDto;
 import app.factory.PopUpFactory;
-import app.handler.EmployeeLoadedHandler;
+import app.handler.ProcessFinishedHandler;
 import app.rest.EmployeesRestClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -83,7 +83,7 @@ public class EditEmployeeController implements Initializable {
 
     }
 
-    public void loadEmployeeData(Integer idEmployee, EmployeeLoadedHandler handler){
+    public void loadEmployeeData(Integer idEmployee, ProcessFinishedHandler handler){
         employeesRestClient.loadEmployeeData(idEmployee, employeeDto -> {
             Platform.runLater(() -> {
                 this.idEmployee = employeeDto.getIdEmployee();

@@ -1,6 +1,6 @@
 package app.factory;
 
-import app.handler.InfoPopUpOkHandler;
+import app.handler.ProcessFinishedHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -60,7 +60,7 @@ public class PopUpFactory {
     }
 
 
-    public Stage createInfoPopUp(String text, InfoPopUpOkHandler handler) {
+    public Stage createInfoPopUp(String text, ProcessFinishedHandler handler) {
 
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UNDECORATED);

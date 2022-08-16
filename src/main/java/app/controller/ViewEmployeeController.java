@@ -1,6 +1,6 @@
 package app.controller;
 
-import app.handler.EmployeeLoadedHandler;
+import app.handler.ProcessFinishedHandler;
 import app.rest.EmployeesRestClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -46,7 +46,7 @@ public class ViewEmployeeController implements Initializable {
 
     }
 
-    public void loadEmployeeData(Integer idEmployee, EmployeeLoadedHandler handler){
+    public void loadEmployeeData(Integer idEmployee, ProcessFinishedHandler handler){
         employeesRestClient.loadEmployeeData(idEmployee, employeeDto -> {
             Platform.runLater(() -> {
                 nameTextField.setText(employeeDto.getName());

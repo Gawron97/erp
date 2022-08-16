@@ -22,7 +22,7 @@ public class ItemTableModel {
 
     public static ItemTableModel of(ItemDto itemDto){
         ItemTableModel item = new ItemTableModel(itemDto.getIdItem(), itemDto.getName(), itemDto.getQuantity(),
-                itemDto.getQuantityType());
+                itemDto.getQuantityTypeDto().getName());
 
         return item;
     }

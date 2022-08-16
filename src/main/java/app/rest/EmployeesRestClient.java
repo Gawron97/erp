@@ -1,11 +1,9 @@
 package app.rest;
 
 import app.dto.EmployeeDto;
-import app.handler.EmployeeDeleteHandler;
+import app.handler.ProcessFinishedHandler;
 import app.handler.EmployeeLoadingHandler;
 import app.handler.LoadEmployeeHandler;
-import app.handler.SaveEmployeeHandler;
-import javafx.application.Platform;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -37,14 +35,14 @@ public class EmployeesRestClient {
         handler.handle(Arrays.stream(employees.getBody()).toList());
     }
 
-    public void saveEmployee(EmployeeDto employeeDto, SaveEmployeeHandler saveEmployeeHandler){
+    public void saveEmployee(EmployeeDto employeeDto, ProcessFinishedHandler saveEmployeeHandler){
 
         Thread thread = new Thread(() -> processSaveEmployee(employeeDto, saveEmployeeHandler));
         thread.start();
 
     }
 
-    private void processSaveEmployee(EmployeeDto employeeDto, SaveEmployeeHandler saveEmployeeHandler){
+    private void processSaveEmployee(EmployeeDto employeeDto, ProcessFinishedHandler saveEmployeeHandler){
         ResponseEntity<EmployeeDto> responseEmployee = restTemplate.postForEntity(EMPLOYEES_URL, employeeDto, EmployeeDto.class);
 
         if(HttpStatus.OK.equals(responseEmployee.getStatusCode())){
@@ -73,7 +71,7 @@ public class EmployeesRestClient {
 
     }
 
-    public void deleteEmployee(Integer idEmployee, EmployeeDeleteHandler handler){
+    public void deleteEmployee(Integer idEmployee, ProcessFinishedHandler handler){
 
         Thread thread = new Thread(() -> {
                 processDeleteEmployee(idEmployee, handler);
@@ -82,7 +80,7 @@ public class EmployeesRestClient {
 
     }
 
-    private void processDeleteEmployee(Integer idEmployee, EmployeeDeleteHandler handler){
+    private void processDeleteEmployee(Integer idEmployee, ProcessFinishedHandler handler){
         String url = EMPLOYEES_ACTION_URL + "/" + idEmployee;
         restTemplate.delete(url);
         handler.handle();

@@ -2,9 +2,9 @@ package app.rest;
 
 import app.dto.ItemDto;
 import app.dto.ItemSumDto;
-import app.handler.ItemSaveHandler;
 import app.handler.LoadItemSumHandler;
 import app.handler.LoadItemsHandler;
+import app.handler.ProcessFinishedHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -48,14 +48,14 @@ public class ItemRestClient {
 
     }
 
-    public void saveItem(ItemDto itemDto, ItemSaveHandler handler) {
+    public void saveItem(ItemDto itemDto, ProcessFinishedHandler handler) {
 
         Thread thread = new Thread(() -> processSaveItem(itemDto, handler));
         thread.start();
 
     }
 
-    private void processSaveItem(ItemDto itemDto, ItemSaveHandler handler) {
+    private void processSaveItem(ItemDto itemDto, ProcessFinishedHandler handler) {
 
         ResponseEntity<ItemDto> itemDtoResponse = restTemplate.postForEntity(ITEMS_URL, itemDto, ItemDto.class);
 

@@ -1,7 +1,7 @@
 package app.handler;
 
 @FunctionalInterface
-public interface SaveEmployeeHandler {
+public interface ProcessFinishedHandler {
 
     void handle();
 

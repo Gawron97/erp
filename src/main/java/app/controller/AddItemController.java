@@ -1,12 +1,16 @@
 package app.controller;
 
 import app.dto.ItemDto;
+import app.dto.QuantityTypeDto;
 import app.factory.PopUpFactory;
 import app.rest.ItemRestClient;
+import app.rest.QuantityTypeRestClient;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -18,6 +22,7 @@ public class AddItemController implements Initializable {
 
     private PopUpFactory popUpFactory;
     private ItemRestClient itemRestClient;
+    private QuantityTypeRestClient quantityTypeRestClient;
 
     @FXML
     private BorderPane borderPane;
@@ -29,9 +34,6 @@ public class AddItemController implements Initializable {
     private TextField quantityTF;
 
     @FXML
-    private TextField quantityTypeTF;
-
-    @FXML
     private TextField warehouseTF;
 
     @FXML
@@ -40,15 +42,30 @@ public class AddItemController implements Initializable {
     @FXML
     private Button cancelButton;
 
+    @FXML
+    private ChoiceBox<QuantityTypeDto> quantityTypeCB;
+
     public AddItemController(){
         popUpFactory = new PopUpFactory();
         itemRestClient = new ItemRestClient();
+        quantityTypeRestClient = new QuantityTypeRestClient();
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeSaveButton();
         initializeCancelButton();
+        initializequantityTypeCB();
+    }
+
+    private void initializequantityTypeCB() {
+
+        quantityTypeRestClient.loadQuantityTypes(quantityTypeDtoList -> {
+            Platform.runLater(() -> {
+                quantityTypeCB.setItems(FXCollections.observableList(quantityTypeDtoList));
+            });
+        });
+
     }
 
     private void initializeCancelButton() {
@@ -65,11 +82,11 @@ public class AddItemController implements Initializable {
         waitingPopUp.show();
 
         String name = nameTF.getText();
-        String quantityType = quantityTypeTF.getText();
+        QuantityTypeDto quantityTypeDto = quantityTypeCB.getSelectionModel().getSelectedItem();
         double quantity = Double.parseDouble(quantityTF.getText());
         String warehouseName = warehouseTF.getText();
 
-        ItemDto itemDto = ItemDto.of(name, quantity, quantityType, warehouseName);
+        ItemDto itemDto = ItemDto.of(name, quantity, quantityTypeDto, warehouseName);
 
         itemRestClient.saveItem(itemDto, () -> {
             Platform.runLater(() -> {
