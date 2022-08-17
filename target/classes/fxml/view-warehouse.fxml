@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" styleClass="background" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.ViewWarehouseController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" styleClass="background" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.ViewItemsWarehouseController">
    <top>
-      <GridPane BorderPane.alignment="CENTER">
+      <GridPane vgap="5.0" BorderPane.alignment="CENTER">
         <columnConstraints>
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -39,11 +39,13 @@
             <TextField fx:id="streetNumberTF" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <TextField fx:id="numberOfItemsTF" GridPane.columnIndex="2" GridPane.rowIndex="3" />
             <TextField fx:id="countryTF" GridPane.rowIndex="3" />
-            <Button fx:id="exitButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="92.0" styleClass="warehouse-button" text="Exit" GridPane.columnIndex="3">
+            <Button fx:id="exitButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" styleClass="warehouse-button" text="Exit" GridPane.columnIndex="3">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin></Button>
-            <Button fx:id="addItemButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="92.0" styleClass="warehouse-button" text="Add Item" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <Button fx:id="addItemButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" styleClass="warehouse-button" text="Add Item" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <Button fx:id="editButton" mnemonicParsing="false" prefWidth="100.0" styleClass="warehouse-button" text="Edit Item" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <Button fx:id="deleteButton" mnemonicParsing="false" prefWidth="100.0" styleClass="warehouse-button" text="Delete Item" GridPane.columnIndex="3" GridPane.rowIndex="3" />
          </children>
          <BorderPane.margin>
             <Insets bottom="5.0" top="5.0" />

@@ -2,6 +2,7 @@ package app.rest;
 
 import app.dto.ItemDto;
 import app.dto.ItemSumDto;
+import app.handler.ItemLoadingHandler;
 import app.handler.LoadItemSumHandler;
 import app.handler.LoadItemsHandler;
 import app.handler.ProcessFinishedHandler;
@@ -63,6 +64,38 @@ public class ItemRestClient {
             handler.handle();
         else
             System.out.println("cos poszlo nie tak");
+
+    }
+
+    public void deleteItem(Integer idItem, ProcessFinishedHandler handler) {
+        Thread thread = new Thread(() -> processDeleteItem(idItem, handler));
+        thread.start();
+    }
+
+    private void processDeleteItem(Integer idItem, ProcessFinishedHandler handler) {
+
+        String url = ITEMS_URL + "/" + idItem;
+
+        restTemplate.delete(url);
+
+        handler.handle();
+
+
+    }
+
+    public void loadItem(Integer idItem, ItemLoadingHandler handler) {
+        Thread thread = new Thread(() -> processLoadItem(idItem, handler));
+        thread.start();
+    }
+
+    private void processLoadItem(Integer idItem, ItemLoadingHandler handler) {
+
+        String url = ITEMS_URL + "/" + idItem;
+
+        ResponseEntity<ItemDto> itemResponse = restTemplate.getForEntity(url, ItemDto.class);
+
+        handler.handle(itemResponse.getBody());
+
 
     }
 }

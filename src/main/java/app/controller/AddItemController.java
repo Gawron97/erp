@@ -55,10 +55,10 @@ public class AddItemController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeSaveButton();
         initializeCancelButton();
-        initializequantityTypeCB();
+        initializeQuantityTypeCB();
     }
 
-    private void initializequantityTypeCB() {
+    private void initializeQuantityTypeCB() {
 
         quantityTypeRestClient.loadQuantityTypes(quantityTypeDtoList -> {
             Platform.runLater(() -> {

@@ -76,16 +76,16 @@ public class EmployeesController implements Initializable {
                 try {
                     Stage waitingPopUp = popUpFactory.createWaitingPopUp("Pobieranie danych o pracowniku");
                     waitingPopUp.show();
-                    Stage employeeView = new Stage();
-                    employeeView.initStyle(StageStyle.UNDECORATED);
-                    employeeView.initModality(Modality.APPLICATION_MODAL);
+                    Stage employeeEdit = new Stage();
+                    employeeEdit.initStyle(StageStyle.UNDECORATED);
+                    employeeEdit.initModality(Modality.APPLICATION_MODAL);
                     FXMLLoader loader = new FXMLLoader(getClass().getResource(EDIT_FXML));
                     Scene scene = new Scene(loader.load(), 500, 400);
-                    employeeView.setScene(scene);
+                    employeeEdit.setScene(scene);
                     EditEmployeeController editController = loader.<EditEmployeeController>getController();
                     editController.loadEmployeeData(selectedEmployee.getIdEmployee(), () -> {
                         waitingPopUp.close();
-                        employeeView.show();
+                        employeeEdit.show();
                     });
 
 

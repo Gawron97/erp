@@ -1,6 +1,5 @@
 package app.controller;
 
-import app.dto.WarehouseDto;
 import app.factory.PopUpFactory;
 import app.handler.WarehouseViewButtonInitializer;
 import app.rest.WarehouseRestClient;
@@ -9,18 +8,14 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -48,7 +43,10 @@ public class WarehouseController implements Initializable {
     private Button refreshButton;
 
     @FXML
-    private Button viewButton;
+    private Button viewDetailsButton;
+
+    @FXML
+    private Button viewItemsButton;
 
     @FXML
     private TableView<WarehouseTableModel> warehousesTV;
@@ -66,7 +64,7 @@ public class WarehouseController implements Initializable {
     }
 
     public void initializeViewButton(WarehouseViewButtonInitializer initializer) {
-        viewButton.setOnAction(actionEvent -> {
+        viewItemsButton.setOnAction(actionEvent -> {
             WarehouseTableModel selectedWarehouse = warehousesTV.getSelectionModel().getSelectedItem();
             initializer.init(selectedWarehouse);
         });

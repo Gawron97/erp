@@ -125,12 +125,12 @@ public class AppController implements Initializable {
                     appPain.getChildren().add(itemsOfWarehouse);
 
                     Stage waitingPopUp = popUpFactory.createWaitingPopUp("Ladujemy dane o przedmiotach i magazynie");
-                    ViewWarehouseController viewWarehouseController = loader2.getController();
+                    ViewItemsWarehouseController viewItemsWarehouseController = loader2.getController();
                     waitingPopUp.show();
-                    viewWarehouseController.loadData(warehouseTableModel, () -> {
+                    viewItemsWarehouseController.loadData(warehouseTableModel, () -> {
                         waitingPopUp.close();
                     });
-                    viewWarehouseController.initializeExitButton(() -> {
+                    viewItemsWarehouseController.initializeExitButton(() -> {
                         loadWarehouseModule(URL_WAREHOUSE);
                     });
 
