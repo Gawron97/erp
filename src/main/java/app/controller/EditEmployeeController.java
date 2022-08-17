@@ -30,6 +30,9 @@ public class EditEmployeeController implements Initializable {
     private TextField nameTextField;
 
     @FXML
+    private TextField peselTextField;
+
+    @FXML
     private TextField salaryTextField;
 
     @FXML
@@ -65,10 +68,11 @@ public class EditEmployeeController implements Initializable {
         waitingPopUp.show();
 
         String name = nameTextField.getText();
+        String pesel = peselTextField.getText();
         String surname = surnameTextField.getText();
         String salary = salaryTextField.getText();
 
-        EmployeeDto employeeDto = EmployeeDto.of(name, surname, salary);
+        EmployeeDto employeeDto = EmployeeDto.of(name, pesel, surname, salary);
         employeeDto.setIdEmployee(idEmployee);
 
         employeesRestClient.saveEmployee(employeeDto, () -> {
@@ -87,6 +91,7 @@ public class EditEmployeeController implements Initializable {
         employeesRestClient.loadEmployeeData(idEmployee, employeeDto -> {
             Platform.runLater(() -> {
                 this.idEmployee = employeeDto.getIdEmployee();
+                peselTextField.setText(employeeDto.getPesel());
                 nameTextField.setText(employeeDto.getName());
                 surnameTextField.setText(employeeDto.getSurname());
                 salaryTextField.setText(employeeDto.getSalary());

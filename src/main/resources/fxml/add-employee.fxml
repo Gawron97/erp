@@ -47,6 +47,8 @@
          <children>
             <Label styleClass="text" text="Name" />
             <TextField fx:id="nameTextField" />
+            <Label styleClass="text" text="Pesel" />
+            <TextField fx:id="peselTextField" />
             <Label styleClass="text" text="Surname" />
             <TextField fx:id="surnameTextField" />
             <Label styleClass="text" text="Salary" />

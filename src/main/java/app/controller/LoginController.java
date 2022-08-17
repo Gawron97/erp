@@ -1,6 +1,6 @@
 package app.controller;
 
-import app.dto.OperatorCredentialsDto;
+import app.dto.OperatorLoginCredentialsDto;
 import app.factory.PopUpFactory;
 import app.rest.Authenticator;
 import app.rest.AuthenticatorImpl;
@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 public class LoginController implements Initializable {
 
     private static final String APP_FXML = "/fxml/app.fxml";
+    private static final String REGISTER_FXML = "/fxml/register.fxml";
     private static final String APP_TITLE = "ERP System";
 
     private PopUpFactory popUpFactory;
@@ -59,6 +60,15 @@ public class LoginController implements Initializable {
 
     private void initializeRegisterButton() {
         registerButton.setOnAction(actionEvent -> {
+            try {
+                Stage register = new Stage();
+                Scene scene = new Scene(FXMLLoader.load(getClass().getResource(REGISTER_FXML)), 500, 400);
+                register.setScene(scene);
+                getStage().close();
+                register.show();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
 
         });
     }
@@ -76,14 +86,14 @@ public class LoginController implements Initializable {
         String login = loginTextField.getText();
         String password = passwordTextField.getText();
 
-        OperatorCredentialsDto dto = new OperatorCredentialsDto();
+        OperatorLoginCredentialsDto dto = new OperatorLoginCredentialsDto();
         dto.setLogin(login);
         dto.setPassword(password);
 
-        authenticator.authenticate(dto, authenticationResult -> {
+        authenticator.authenticateLogin(dto, authenticationResult -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
-                if(authenticationResult.isAuthenticated())
+                if(authenticationResult)
                     openAppAndCloseLoginPage();
                 else
                     showIncorrectCredentialsMessage();

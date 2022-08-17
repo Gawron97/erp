@@ -1,10 +1,14 @@
 package app.rest;
 
-import app.dto.OperatorCredentialsDto;
+import app.dto.OperatorLoginCredentialsDto;
+import app.dto.OperatorRegisterCredentialsDto;
 import app.handler.AuthenticationResultHandler;
 
 public interface Authenticator {
 
-    void authenticate(OperatorCredentialsDto operatorCredentialsDto, AuthenticationResultHandler authenticationResultHandler);
+    void authenticateLogin(OperatorLoginCredentialsDto operatorLoginCredentialsDto, AuthenticationResultHandler authenticationResultHandler);
+
+
+    void authenticateRegister(OperatorRegisterCredentialsDto dto, AuthenticationResultHandler authenticationResultHandler);
 
 }

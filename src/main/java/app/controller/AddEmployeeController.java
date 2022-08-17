@@ -32,6 +32,9 @@ public class AddEmployeeController implements Initializable {
     private TextField salaryTextField;
 
     @FXML
+    private TextField peselTextField;
+
+    @FXML
     private Button saveButton;
 
     @FXML
@@ -60,10 +63,11 @@ public class AddEmployeeController implements Initializable {
         waitingPopUp.show();
 
         String name = nameTextField.getText();
+        String pesel = peselTextField.getText();
         String surname = surnameTextField.getText();
         String salary = salaryTextField.getText();
 
-        EmployeeDto employeeDto = EmployeeDto.of(name, surname, salary);
+        EmployeeDto employeeDto = EmployeeDto.of(name, pesel, surname, salary);
 
         employeesRestClient.saveEmployee(employeeDto, () -> {
             Platform.runLater(() -> {
