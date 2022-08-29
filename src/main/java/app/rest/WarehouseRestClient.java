@@ -1,10 +1,10 @@
 package app.rest;
 
 import app.dto.ItemDto;
+import app.dto.QuantityTypeDto;
+import app.dto.WarehouseCBDto;
 import app.dto.WarehouseDto;
-import app.handler.ItemsLoadingHandler;
-import app.handler.LoadWarehouseHandler;
-import app.handler.LoadWarehouseItemsHandler;
+import app.handler.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +14,7 @@ import java.util.Arrays;
 public class WarehouseRestClient {
 
     private static final String WAREHOUSES_URL = "http://localhost:8080/warehouses";
+    private static final String WAREHOUSES_CB_URL = "http://localhost:8080/warehouses_cb";
 
     private final RestTemplate restTemplate;
 
@@ -47,6 +48,22 @@ public class WarehouseRestClient {
 
         if(HttpStatus.OK.equals(warehouseResponse.getStatusCode()))
             handler.handle(warehouseResponse.getBody());
+
+    }
+
+    public void loadWarehousesToCB(LoadWarehousesCBHandler handler){
+        Thread thread = new Thread(() -> processLoadWarehousesToCB(handler));
+        thread.start();
+    }
+
+    private void processLoadWarehousesToCB(LoadWarehousesCBHandler handler) {
+        ResponseEntity<WarehouseCBDto[]> warehouseCBResponse = restTemplate.getForEntity(WAREHOUSES_CB_URL,
+                WarehouseCBDto[].class);
+
+        if(HttpStatus.OK.equals(warehouseCBResponse.getStatusCode()))
+            handler.handle(Arrays.stream(warehouseCBResponse.getBody()).toList());
+        else
+            throw new RuntimeException("cos poszlo nie tak");
 
     }
 

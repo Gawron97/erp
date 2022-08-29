@@ -2,6 +2,7 @@ package app.controller;
 
 import app.dto.ItemDto;
 import app.dto.WarehouseDto;
+import app.factory.PopUpFactory;
 import app.handler.ProcessFinishedHandler;
 import app.handler.WarehouseViewExitInitializer;
 import app.rest.WarehouseRestClient;
@@ -33,9 +34,10 @@ public class ViewItemsWarehouseController implements Initializable {
 
     private static final String ADD_FXML = "/fxml/add-item.fxml";
     private static final String DELETE_FXML = "/fxml/delete-item.fxml";
-    private static final String EDIT_FXML = "/fxml/edit-item.fxml";
+    private static final String TRANSPORT_FXML = "/fxml/transport-item.fxml";
 
     private WarehouseRestClient warehouseRestClient;
+    private PopUpFactory popUpFactory;
 
     @FXML
     private TextField cityTF;
@@ -59,7 +61,7 @@ public class ViewItemsWarehouseController implements Initializable {
     private Button deleteButton;
 
     @FXML
-    private Button editButton;
+    private Button transportButton;
 
     @FXML
     private TextField numberOfItemsTF;
@@ -72,6 +74,7 @@ public class ViewItemsWarehouseController implements Initializable {
 
     public ViewItemsWarehouseController(){
         warehouseRestClient = new WarehouseRestClient();
+        popUpFactory = new PopUpFactory();
     }
 
     @Override
@@ -79,7 +82,7 @@ public class ViewItemsWarehouseController implements Initializable {
         initializeItemsTV();
         initializeAddButton();
         initializeDeleteButton();
-        initializeEditButton();
+        initializeTransportButton();
     }
 
     private void initializeDeleteButton() {
@@ -103,26 +106,31 @@ public class ViewItemsWarehouseController implements Initializable {
         });
     }
 
-    private void initializeEditButton() {
-//        editButton.setOnAction(actionEvent -> {
-//            try {
-//                Stage editStage = new Stage();
-//                editStage.initStyle(StageStyle.UNDECORATED);
-//                editStage.initModality(Modality.APPLICATION_MODAL);
-//
-//                FXMLLoader loader = new FXMLLoader(getClass().getResource(EDIT_FXML));
-//                Scene scene = new Scene(loader.load(), 500, 400);
-//                editStage.setScene(scene);
-//
-//                EditItemController editItemController = loader.getController();
-//
-//                editItemController.loadItemData(itemsTV.getSelectionModel().getSelectedItem().getIdItem());
-//
-//                editStage.show();
-//            }catch (IOException e){
-//                e.printStackTrace();
-//            }
-//        });
+    private void initializeTransportButton() {
+        transportButton.setOnAction(actionEvent -> {
+            try {
+
+                Stage waitingPopUp = popUpFactory.createWaitingPopUp("wczytujemy dane potrzebne o przedmiocie i transporcie");
+                waitingPopUp.show();
+
+                Stage transportStage = new Stage();
+                transportStage.initModality(Modality.APPLICATION_MODAL);
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(TRANSPORT_FXML));
+                Scene scene = new Scene(loader.load(), 1024, 768);
+                transportStage.setScene(scene);
+
+                TransportItemController transportItemController = loader.getController();
+
+                transportItemController.loadTransportData(itemsTV.getSelectionModel().getSelectedItem().getIdItem(), () -> {
+                    waitingPopUp.close();
+                    transportStage.show();
+                });
+
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        });
     }
 
     private void initializeAddButton() {

@@ -2,10 +2,8 @@ package app.rest;
 
 import app.dto.ItemDto;
 import app.dto.ItemSumDto;
-import app.handler.ItemLoadingHandler;
-import app.handler.LoadItemSumHandler;
-import app.handler.LoadItemsHandler;
-import app.handler.ProcessFinishedHandler;
+import app.dto.TransportDto;
+import app.handler.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -16,6 +14,7 @@ public class ItemRestClient {
 
     private static final String ITEMS_URL = "http://localhost:8080/items";
     private static final String ITEMS_SUM_URL = "http://localhost:8080/items_sum";
+    private static final String TRANSPORT_URL = "http://localhost:8080/transport";
 
     private final RestTemplate restTemplate;
 
@@ -83,19 +82,17 @@ public class ItemRestClient {
 
     }
 
-    public void loadItem(Integer idItem, ItemLoadingHandler handler) {
-        Thread thread = new Thread(() -> processLoadItem(idItem, handler));
+    public void loadTransportData(Integer idItem, TransportLoadingHandler handler) {
+        Thread thread = new Thread(() -> processLoadingTransportData(idItem, handler));
         thread.start();
     }
 
-    private void processLoadItem(Integer idItem, ItemLoadingHandler handler) {
+    private void processLoadingTransportData(Integer idItem, TransportLoadingHandler handler) {
 
-        String url = ITEMS_URL + "/" + idItem;
+        String url = TRANSPORT_URL + "/" + idItem;
 
-        ResponseEntity<ItemDto> itemResponse = restTemplate.getForEntity(url, ItemDto.class);
+        ResponseEntity<TransportDto> itemResponse = restTemplate.getForEntity(url, TransportDto.class);
 
         handler.handle(itemResponse.getBody());
-
-
     }
 }
