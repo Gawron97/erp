@@ -5,24 +5,22 @@ import lombok.Data;
 @Data
 public class TransportItemDto {
 
-    private Integer id;
-    private String name;
+    private Integer idItem;
     private double quantityToSend;
-    private QuantityTypeDto quantityTypeDto;
     private String transportationType;
     private Integer newWarehouseId;
+    private Integer idTruck;
 
-    public static TransportItemDto of(Integer id, String name, double newQuantity,
-                                      QuantityTypeDto quantityTypeDto, String transportationType, Integer newWarehouseId){
+    public static TransportItemDto of(Integer idItem, double quantityToSend, String transportationType, Integer newWarehouseId,
+                                      Integer idTruck){
 
         TransportItemDto dto = new TransportItemDto();
 
-        dto.id = id;
-        dto.name = name;
-        dto.quantityToSend = newQuantity;
-        dto.quantityTypeDto = quantityTypeDto;
+        dto.idItem = idItem;
+        dto.quantityToSend = quantityToSend;
         dto.transportationType = transportationType;
         dto.newWarehouseId = newWarehouseId;
+        dto.idTruck = idTruck;
 
         return dto;
     }

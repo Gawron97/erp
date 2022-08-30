@@ -9,7 +9,10 @@
 
 <BorderPane fx:id="borderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" styleClass="background" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.WarehouseController">
    <center>
-      <TableView fx:id="warehousesTV" prefHeight="200.0" prefWidth="200.0" styleClass="background" BorderPane.alignment="CENTER" />
+      <TableView fx:id="warehousesTV" prefHeight="200.0" prefWidth="200.0" styleClass="background" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="30.0" />
+         </BorderPane.margin></TableView>
    </center>
    <top>
       <HBox prefHeight="50.0" prefWidth="1024.0" spacing="10.0" BorderPane.alignment="CENTER">

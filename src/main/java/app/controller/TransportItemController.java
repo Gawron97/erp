@@ -1,6 +1,7 @@
 package app.controller;
 
 import app.dto.TransportDto;
+import app.dto.TransportItemDto;
 import app.dto.WarehouseCBDto;
 import app.factory.PopUpFactory;
 import app.handler.ProcessFinishedHandler;
@@ -18,9 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class TransportItemController implements Initializable {
 
@@ -71,6 +70,9 @@ public class TransportItemController implements Initializable {
 
     private Integer idItem;
     private TruckTableModel selectedTruck;
+    private Integer idWarehouse;
+
+    //TODO dodanie opcji all ktora uzupelni quantityToSend do ilosci jaka jest itemu w magazynie
 
     public TransportItemController(){
         itemRestClient = new ItemRestClient();
@@ -96,42 +98,49 @@ public class TransportItemController implements Initializable {
     }
 
     private void initializeSaveButton() {
-        //saveButton.setOnAction(actionEvent -> saveItem());
+        saveButton.setOnAction(actionEvent -> transportItem());
     }
 
-//    private void saveItem() {
-//        Stage waitingPopUp = popUpFactory.createWaitingPopUp("ladujemy item do bazy danych");
-//        waitingPopUp.show();
-//
-//        String warehouse = warehouseTF.getText();
-//        String name = nameTF.getText();
-//        double quantity = Double.parseDouble(quantityTF.getText());
-//        QuantityTypeDto quantityTypeDto = quantityTypeCB.getSelectionModel().getSelectedItem();
-//
-//        ItemDto itemDto = ItemDto.of(name, quantity, quantityTypeDto, warehouse);
-//        itemDto.setIdItem(idItem);
-//
-//        itemRestClient.saveItem(itemDto, () -> {
-//            Platform.runLater(() -> {
-//                waitingPopUp.close();
-//                Stage infoPopUp = popUpFactory.createInfoPopUp("Item zostal edytowany", () -> getStage().close());
-//                infoPopUp.show();
-//            });
-//        });
-//
-//    }
+    private void transportItem() {
+        Stage waitingPopUp = popUpFactory.createWaitingPopUp("Wysylamy item do transportu");
+        waitingPopUp.show();
+
+        TransportItemDto transportItemDto = createTransportItemDto();
+
+        itemRestClient.transportItem(transportItemDto, () -> {
+            Platform.runLater(() -> {
+                waitingPopUp.close();
+                Stage infoPopUp = popUpFactory.createInfoPopUp("Item wyslany do transportu", () -> getStage().close());
+                infoPopUp.show();
+            });
+        });
+
+    }
+
+    private TransportItemDto createTransportItemDto() {
+
+        Integer idItem = this.idItem;
+        double quantityToSend = Double.parseDouble(quantityToSendTF.getText());
+        String transportationType = transportationTypeCB.getSelectionModel().getSelectedItem().toString();
+        Integer newWarehouseId = toWarehousesCB.getSelectionModel().getSelectedItem().getIdWarehouse();
+        Integer idTruck = selectedTruck.getIdTruck();
+
+        return TransportItemDto.of(idItem, quantityToSend, transportationType, newWarehouseId, idTruck);
+
+    }
 
     private void initializeCancelButton() {
         cancelButton.setOnAction(actionEvent -> getStage().close());
     }
 
-    public void loadTransportData(Integer idItem, ProcessFinishedHandler handler){
+    public void loadTransportData(Integer idItem, Integer idWarehouse, ProcessFinishedHandler handler){
 
         itemRestClient.loadTransportData(idItem, transportDto -> {
             Platform.runLater(() -> {
                 this.idItem = idItem;
+                this.idWarehouse = idWarehouse;
                 fillItemDetails(transportDto);
-                loadWarehousesChoiceBox(transportDto);
+                loadWarehousesChoiceBox();
                 initializeTruckTV();
                 loadTrucksData(transportDto);
                 loadTransportationTypeCB();
@@ -172,7 +181,7 @@ public class TransportItemController implements Initializable {
 
     }
 
-    private void loadWarehousesChoiceBox(TransportDto transportDto) {
+    private void loadWarehousesChoiceBox() {
 
         warehouseRestClient.loadWarehousesToCB(warehouseCBDtoList -> {
             Platform.runLater(() -> {

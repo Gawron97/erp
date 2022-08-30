@@ -3,6 +3,7 @@ package app.rest;
 import app.dto.ItemDto;
 import app.dto.ItemSumDto;
 import app.dto.TransportDto;
+import app.dto.TransportItemDto;
 import app.handler.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,25 @@ public class ItemRestClient {
             handler.handle();
         else
             System.out.println("cos poszlo nie tak");
+
+    }
+
+    public void transportItem(TransportItemDto dto, ProcessFinishedHandler handler){
+
+        Thread thread = new Thread(() -> processtransportItem(dto, handler));
+        thread.start();
+
+    }
+
+    private void processtransportItem(TransportItemDto dto, ProcessFinishedHandler handler) {
+
+        ResponseEntity<ResponseEntity> responseEntity = restTemplate.postForEntity(TRANSPORT_URL, dto, ResponseEntity.class);
+
+        if(HttpStatus.OK.equals(responseEntity.getStatusCode()))
+            handler.handle();
+        else
+            System.out.println("cos poszlo nie tak");
+        //TODO przesylanie do handle boola albo responseEntity i wyswietlanie komuikatu o ew. niepowodzeniu w kontrolerze
 
     }
 

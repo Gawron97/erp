@@ -23,7 +23,10 @@
       </HBox>
    </top>
    <center>
-      <TableView fx:id="warehouseTV" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <TableView fx:id="warehouseTV" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="30.0" />
+         </BorderPane.margin></TableView>
    </center>
    <stylesheets>
       <URL value="@../css/warehouses.css" />

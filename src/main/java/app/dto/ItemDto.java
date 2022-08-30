@@ -9,15 +9,15 @@ public class ItemDto {
     private String name;
     private double quantity;
     private QuantityTypeDto quantityTypeDto;
-    private String warehouseName;
+    private Integer idWarehouse;
 
-    public static ItemDto of(String name, double quantity, QuantityTypeDto quantityTypeDto, String warehouseName){
+    public static ItemDto of(String name, double quantity, QuantityTypeDto quantityTypeDto, Integer idWarehouse){
         ItemDto dto = new ItemDto();
 
         dto.name = name;
         dto.quantity = quantity;
         dto.quantityTypeDto = quantityTypeDto;
-        dto.warehouseName = warehouseName;
+        dto.idWarehouse = idWarehouse;
 
         return dto;
     }

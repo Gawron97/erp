@@ -72,6 +72,8 @@ public class ViewItemsWarehouseController implements Initializable {
     @FXML
     private TextField streetTF;
 
+    private WarehouseTableModel warehouse;
+
     public ViewItemsWarehouseController(){
         warehouseRestClient = new WarehouseRestClient();
         popUpFactory = new PopUpFactory();
@@ -122,7 +124,8 @@ public class ViewItemsWarehouseController implements Initializable {
 
                 TransportItemController transportItemController = loader.getController();
 
-                transportItemController.loadTransportData(itemsTV.getSelectionModel().getSelectedItem().getIdItem(), () -> {
+                transportItemController.loadTransportData(itemsTV.getSelectionModel().getSelectedItem().getIdItem(),
+                        warehouse.getIdWarehouse(), () -> {
                     waitingPopUp.close();
                     transportStage.show();
                 });
@@ -145,7 +148,7 @@ public class ViewItemsWarehouseController implements Initializable {
                 addStage.setScene(scene);
 
                 AddItemController addItemController = loader.getController();
-                addItemController.loadWarehouse(nameTF.getText());
+                addItemController.loadWarehouse(warehouse);
 
                 addStage.show();
             }catch (IOException e){
@@ -178,6 +181,8 @@ public class ViewItemsWarehouseController implements Initializable {
 
     public void loadData(WarehouseTableModel warehouse, ProcessFinishedHandler handler){
         ObservableList<ItemTableModel> data = FXCollections.observableArrayList();
+
+        this.warehouse = warehouse;
 
         warehouseRestClient.loadWarehouse(warehouse.getIdWarehouse(), warehouseDto -> {
             Platform.runLater(() -> {

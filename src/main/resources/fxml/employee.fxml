@@ -13,6 +13,9 @@
         <columns>
 
         </columns>
+         <BorderPane.margin>
+            <Insets bottom="30.0" />
+         </BorderPane.margin>
     </TableView>
 </center>
    <top>

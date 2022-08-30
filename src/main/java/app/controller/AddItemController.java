@@ -5,6 +5,7 @@ import app.dto.QuantityTypeDto;
 import app.factory.PopUpFactory;
 import app.rest.ItemRestClient;
 import app.rest.QuantityTypeRestClient;
+import app.table.WarehouseTableModel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -44,6 +45,7 @@ public class AddItemController implements Initializable {
 
     @FXML
     private ChoiceBox<QuantityTypeDto> quantityTypeCB;
+    private Integer idWarehouse;
 
     public AddItemController(){
         popUpFactory = new PopUpFactory();
@@ -84,9 +86,8 @@ public class AddItemController implements Initializable {
         String name = nameTF.getText();
         QuantityTypeDto quantityTypeDto = quantityTypeCB.getSelectionModel().getSelectedItem();
         double quantity = Double.parseDouble(quantityTF.getText());
-        String warehouseName = warehouseTF.getText();
 
-        ItemDto itemDto = ItemDto.of(name, quantity, quantityTypeDto, warehouseName);
+        ItemDto itemDto = ItemDto.of(name, quantity, quantityTypeDto, idWarehouse);
 
         itemRestClient.saveItem(itemDto, () -> {
             Platform.runLater(() -> {
@@ -98,9 +99,10 @@ public class AddItemController implements Initializable {
 
     }
 
-    public void loadWarehouse(String warehouseName){
+    public void loadWarehouse(WarehouseTableModel warehouse){
         warehouseTF.setEditable(false);
-        warehouseTF.setText(warehouseName);
+        warehouseTF.setText(warehouse.getName());
+        this.idWarehouse = warehouse.getIdWarehouse();
     }
 
     private Stage getStage(){
