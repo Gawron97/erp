@@ -5,6 +5,7 @@ import app.dto.WarehouseDto;
 import app.factory.PopUpFactory;
 import app.handler.ProcessFinishedHandler;
 import app.handler.WarehouseViewExitInitializer;
+import app.rest.ItemRestClient;
 import app.rest.WarehouseRestClient;
 import app.table.ItemTableModel;
 import app.table.WarehouseTableModel;
@@ -40,12 +41,6 @@ public class ViewItemsWarehouseController implements Initializable {
     private PopUpFactory popUpFactory;
 
     @FXML
-    private TextField cityTF;
-
-    @FXML
-    private TextField countryTF;
-
-    @FXML
     private TableView<ItemTableModel> itemsTV;
 
     @FXML
@@ -55,22 +50,11 @@ public class ViewItemsWarehouseController implements Initializable {
     private Button addItemButton;
 
     @FXML
-    private TextField nameTF;
-
-    @FXML
     private Button deleteButton;
 
     @FXML
     private Button transportButton;
 
-    @FXML
-    private TextField numberOfItemsTF;
-
-    @FXML
-    private TextField streetNumberTF;
-
-    @FXML
-    private TextField streetTF;
 
     private WarehouseTableModel warehouse;
 
@@ -189,29 +173,12 @@ public class ViewItemsWarehouseController implements Initializable {
                 List<ItemDto> itemDtoList = warehouseDto.getItems();
                 data.addAll(itemDtoList.stream().map(itemDto -> ItemTableModel.of(itemDto)).collect(Collectors.toList()));
                 itemsTV.setItems(data);
-                fillWarehouseData(warehouseDto);
                 handler.handle();
             });
 
         });
     }
 
-    private void fillWarehouseData(WarehouseDto warehouse) {
-        nameTF.setEditable(false);
-        cityTF.setEditable(false);
-        streetTF.setEditable(false);
-        streetNumberTF.setEditable(false);
-        countryTF.setEditable(false);
-        numberOfItemsTF.setEditable(false);
-
-        nameTF.setText(warehouse.getName());
-        cityTF.setText(warehouse.getAddressDto().getCity());
-        streetTF.setText(warehouse.getAddressDto().getStreet());
-        streetNumberTF.setText(warehouse.getAddressDto().getStreetNumber().toString());
-        countryTF.setText(warehouse.getAddressDto().getCountryDto().getCountry());
-        numberOfItemsTF.setText(Integer.toString(warehouse.getItems().size()));
-
-    }
 
     public void initializeExitButton(WarehouseViewExitInitializer initializer){
         exitButton.setOnAction(actionEvent -> initializer.init());

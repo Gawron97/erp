@@ -49,6 +49,7 @@ public class ItemRestClient {
 
     }
 
+
     public void saveItem(ItemDto itemDto, ProcessFinishedHandler handler) {
 
         Thread thread = new Thread(() -> processSaveItem(itemDto, handler));

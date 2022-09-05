@@ -1,7 +1,5 @@
 package app.rest;
 
-import app.dto.ItemDto;
-import app.dto.QuantityTypeDto;
 import app.dto.WarehouseCBDto;
 import app.dto.WarehouseDto;
 import app.handler.*;
@@ -14,6 +12,7 @@ import java.util.Arrays;
 public class WarehouseRestClient {
 
     private static final String WAREHOUSES_URL = "http://localhost:8080/warehouses";
+    private static final String WAREHOUSE_DETAILS_URL = "http://localhost:8080/warehouse/details";
     private static final String WAREHOUSES_CB_URL = "http://localhost:8080/warehouses_cb";
 
     private final RestTemplate restTemplate;
@@ -36,13 +35,29 @@ public class WarehouseRestClient {
     }
 
     public void loadWarehouse(Integer idWarehouse, LoadWarehouseHandler handler){
-        Thread thread = new Thread(() -> processloadingWarehouse(idWarehouse, handler));
+        Thread thread = new Thread(() -> processLoadWarehouse(idWarehouse, handler));
         thread.start();
     }
 
-    private void processloadingWarehouse(Integer idWarehouse, LoadWarehouseHandler handler) {
+    private void processLoadWarehouse(Integer idWarehouse, LoadWarehouseHandler handler) {
 
         String url = WAREHOUSES_URL + "/" + idWarehouse;
+
+        ResponseEntity<WarehouseDto> warehouseResponse = restTemplate.getForEntity(url, WarehouseDto.class);
+
+        if(HttpStatus.OK.equals(warehouseResponse.getStatusCode()))
+            handler.handle(warehouseResponse.getBody());
+
+    }
+
+    public void loadWarehouseDetails(Integer idWarehouse, LoadWarehouseHandler handler){
+        Thread thread = new Thread(() -> processLoadWarehouseDetails(idWarehouse, handler));
+        thread.start();
+    }
+
+    private void processLoadWarehouseDetails(Integer idWarehouse, LoadWarehouseHandler handler) {
+
+        String url = WAREHOUSE_DETAILS_URL + "/" + idWarehouse;
 
         ResponseEntity<WarehouseDto> warehouseResponse = restTemplate.getForEntity(url, WarehouseDto.class);
 

@@ -19,7 +19,7 @@ public class AppController implements Initializable {
 
     private static final String URL_EMPLOYEE = "/fxml/employee.fxml";
     private static final String URL_WAREHOUSE = "/fxml/warehouse.fxml";
-    private static final String URL_WAREHOUSE_VIEW = "/fxml/view-warehouse.fxml";
+    private static final String URL_WAREHOUSE_VIEW = "/fxml/view-items-warehouse.fxml";
     private static final String URL_ITEM = "/fxml/item.fxml";
     private static final String URL_LOGIN = "/fxml/login.fxml";
 
@@ -117,7 +117,7 @@ public class AppController implements Initializable {
 
             WarehouseController warehouseController = loader.getController();
 
-            warehouseController.initializeViewButton(warehouseTableModel -> {
+            warehouseController.initializeViewItemsButton(warehouseTableModel -> {
                 try{
                     appPain.getChildren().clear();
                     FXMLLoader loader2 = new FXMLLoader(getClass().getResource(URL_WAREHOUSE_VIEW));
