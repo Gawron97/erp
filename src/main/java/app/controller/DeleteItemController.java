@@ -62,7 +62,6 @@ public class DeleteItemController implements Initializable {
 
     private void initializeCancelButton() {
         cancelButton.setOnAction(actionEvent -> getStage().close());
-
     }
 
     private Stage getStage(){

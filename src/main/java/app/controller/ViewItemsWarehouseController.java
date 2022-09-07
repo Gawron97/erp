@@ -1,11 +1,9 @@
 package app.controller;
 
 import app.dto.ItemDto;
-import app.dto.WarehouseDto;
 import app.factory.PopUpFactory;
 import app.handler.ProcessFinishedHandler;
 import app.handler.WarehouseViewExitInitializer;
-import app.rest.ItemRestClient;
 import app.rest.WarehouseRestClient;
 import app.table.ItemTableModel;
 import app.table.WarehouseTableModel;
@@ -19,7 +17,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -33,7 +30,7 @@ import java.util.stream.Collectors;
 
 public class ViewItemsWarehouseController implements Initializable {
 
-    private static final String ADD_FXML = "/fxml/add-item.fxml";
+    private static final String ADD_FXML = "/fxml/buy-item.fxml";
     private static final String DELETE_FXML = "/fxml/delete-item.fxml";
     private static final String TRANSPORT_FXML = "/fxml/transport-item.fxml";
 
@@ -55,7 +52,6 @@ public class ViewItemsWarehouseController implements Initializable {
     @FXML
     private Button transportButton;
 
-
     private WarehouseTableModel warehouse;
 
     public ViewItemsWarehouseController(){
@@ -66,7 +62,7 @@ public class ViewItemsWarehouseController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeItemsTV();
-        initializeAddButton();
+//        initializeAddButton();
         initializeDeleteButton();
         initializeTransportButton();
     }
@@ -121,26 +117,26 @@ public class ViewItemsWarehouseController implements Initializable {
     }
 
     private void initializeAddButton() {
-        addItemButton.setOnAction(actionEvent -> {
-            try{
-                Stage addStage = new Stage();
-                addStage.initStyle(StageStyle.UNDECORATED);
-                addStage.initModality(Modality.APPLICATION_MODAL);
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(ADD_FXML));
-                Scene scene = new Scene(loader.load(), 500, 400);
-                addStage.setScene(scene);
-
-                AddItemController addItemController = loader.getController();
-                addItemController.loadWarehouse(warehouse);
-
-                addStage.show();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-
-
-        });
+//        addItemButton.setOnAction(actionEvent -> {
+//            try{
+//                Stage addStage = new Stage();
+//                addStage.initStyle(StageStyle.UNDECORATED);
+//                addStage.initModality(Modality.APPLICATION_MODAL);
+//
+//                FXMLLoader loader = new FXMLLoader(getClass().getResource(ADD_FXML));
+//                Scene scene = new Scene(loader.load(), 500, 400);
+//                addStage.setScene(scene);
+//
+//                BuyItemController buyItemController = loader.getController();
+//                addItemController.loadWarehouse(warehouse);
+//
+//                addStage.show();
+//            }catch (IOException e){
+//                e.printStackTrace();
+//            }
+//
+//
+//        });
     }
 
     private void initializeItemsTV() {

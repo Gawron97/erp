@@ -19,6 +19,7 @@ public class AppController implements Initializable {
 
     private static final String URL_EMPLOYEE = "/fxml/employee.fxml";
     private static final String URL_WAREHOUSE = "/fxml/warehouse.fxml";
+    private static final String URL_STOCK_ITEM = "/fxml/stockItem.fxml";
     private static final String URL_WAREHOUSE_VIEW = "/fxml/view-items-warehouse.fxml";
     private static final String URL_ITEM = "/fxml/item.fxml";
     private static final String URL_LOGIN = "/fxml/login.fxml";
@@ -46,6 +47,9 @@ public class AppController implements Initializable {
     @FXML
     private MenuItem itemModuleMI;
 
+    @FXML
+    private MenuItem stockItemModuleMI;
+
 
     public AppController(){
         popUpFactory = new PopUpFactory();
@@ -61,10 +65,10 @@ public class AppController implements Initializable {
         initializeEmployeeModuleMI();
         initializeWarehouseModuleMI();
         initializeItemModuleMI();
+        initializeStockItemModuleMI();
         initializeExitMI();
         initializeLogoutMI();
     }
-
 
     private void initializeLogoutMI() {
         logoutMI.setOnAction(actionEvent -> logout());
@@ -84,6 +88,10 @@ public class AppController implements Initializable {
 
     private void initializeEmployeeModuleMI() {
         employeeModuleMI.setOnAction(actionEvent -> loadModule(URL_EMPLOYEE));
+    }
+
+    private void initializeStockItemModuleMI() {
+        stockItemModuleMI.setOnAction(actionEvent -> loadModule(URL_STOCK_ITEM));
     }
 
     private void loadDefault(){
