@@ -36,16 +36,34 @@ public class ItemRestClient {
 
     }
 
-    public void loadItemsSum(LoadItemSumHandler handler){
+    public void loadItemsSum(LoadItemSumsHandler handler){
         Thread thread = new Thread(() -> processloadItemsSum(handler));
         thread.start();
     }
 
-    public void processloadItemsSum(LoadItemSumHandler handler){
+    public void processloadItemsSum(LoadItemSumsHandler handler){
 
         ResponseEntity<ItemSumDto[]> responseItems = restTemplate.getForEntity(ITEMS_SUM_URL, ItemSumDto[].class);
 
         handler.handle(Arrays.stream(responseItems.getBody()).toList());
+
+    }
+
+    public void loadItemSum(Integer idItemSum, LoadItemSumHandler handler){
+        Thread thread = new Thread(() -> processLoadItemSum(idItemSum, handler));
+        thread.start();
+    }
+
+    private void processLoadItemSum(Integer idItemSum, LoadItemSumHandler handler) {
+
+        String url = ITEMS_SUM_URL + "/" + idItemSum;
+
+        ResponseEntity<ItemSumDto> responseItemSum = restTemplate.getForEntity(url, ItemSumDto.class);
+
+        if(HttpStatus.OK.equals(responseItemSum.getStatusCode()))
+            handler.handle(responseItemSum.getBody());
+        else
+            System.out.println("cos nie tak");
 
     }
 

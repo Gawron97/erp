@@ -8,19 +8,25 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class ItemController implements Initializable {
+
+    private static final String VIEW_ITEM_SUM_FXML  = "/fxml/view-item-sum.fxml";
 
     private PopUpFactory popUpFactory;
     private ItemRestClient itemRestClient;
@@ -87,7 +93,34 @@ public class ItemController implements Initializable {
 
     private void initializeViewButton() {
 
+        viewButton.setOnAction(actionEvent -> {
 
+            ItemSumTableModel itemSumTableModel = itemSumsTV.getSelectionModel().getSelectedItem();
+            if(itemSumTableModel == null)
+                return;
+
+            try{
+
+                Stage waitingPopUp = popUpFactory.createWaitingPopUp("ladujemy informacje o przedmiocie");
+                waitingPopUp.show();
+
+                Stage viewItemSum = new Stage();
+                viewItemSum.initModality(Modality.APPLICATION_MODAL);
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEW_ITEM_SUM_FXML));
+                Scene scene = new Scene(loader.load(), 500, 400);
+
+                ViewItemSumController viewItemSumController = loader.getController();
+                viewItemSumController.loadItemSumData(itemSumTableModel, () -> {
+                    viewItemSum.setScene(scene);
+                    waitingPopUp.close();
+                    viewItemSum.show();
+                });
+
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        });
 
     }
 
