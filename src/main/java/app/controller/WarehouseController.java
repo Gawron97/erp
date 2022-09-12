@@ -1,9 +1,7 @@
 package app.controller;
 
 import app.factory.PopUpFactory;
-import app.handler.WarehouseViewButtonInitializer;
 import app.rest.WarehouseRestClient;
-import app.table.EmployeeTableModel;
 import app.table.WarehouseTableModel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -17,9 +15,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,6 +30,7 @@ import java.util.stream.Collectors;
 public class WarehouseController implements Initializable {
 
     private static final String VIEW_DETAILS_WAREHOUSE = "/fxml/view-details-warehouse.fxml";
+    private static final String URL_WAREHOUSE_VIEW_ITEMS = "/fxml/view-items-warehouse.fxml";
 
     private PopUpFactory popUpFactory;
     private WarehouseRestClient warehouseRestClient;
@@ -102,12 +101,14 @@ public class WarehouseController implements Initializable {
 
     }
 
-    public void initializeViewItemsButton(WarehouseViewButtonInitializer initializer) {
-        viewItemsButton.setOnAction(actionEvent -> {
-            WarehouseTableModel selectedWarehouse = warehousesTV.getSelectionModel().getSelectedItem();
-            initializer.init(selectedWarehouse);
-        });
-    }
+
+
+//    public void initializeViewItemsButton(WarehouseViewButtonInitializer initializer) {
+//        viewItemsButton.setOnAction(actionEvent -> {
+//            WarehouseTableModel selectedWarehouse = warehousesTV.getSelectionModel().getSelectedItem();
+//            initializer.init(selectedWarehouse);
+//        });
+//    }
 
     private void initializeTableView() {
 
@@ -151,7 +152,32 @@ public class WarehouseController implements Initializable {
     }
 
 
+    public void initializeViewItemsButton(Pane appPain) {
 
+        viewItemsButton.setOnAction(actionEvent -> {
 
+            WarehouseTableModel warehouseTableModel = warehousesTV.getSelectionModel().getSelectedItem();
+            if(warehouseTableModel == null)
+                return;
 
+            try{
+                appPain.getChildren().clear();
+                FXMLLoader loader2 = new FXMLLoader(getClass().getResource(URL_WAREHOUSE_VIEW_ITEMS));
+                BorderPane itemsOfWarehouse = new BorderPane(loader2.load());
+                appPain.getChildren().add(itemsOfWarehouse);
+
+                Stage waitingPopUp = popUpFactory.createWaitingPopUp("Ladujemy dane o przedmiotach w wybranym magazynie");
+                waitingPopUp.show();
+                ViewItemsWarehouseController viewItemsWarehouseController = loader2.getController();
+                viewItemsWarehouseController.loadData(warehouseTableModel, () -> {
+                    waitingPopUp.close();
+                });
+                viewItemsWarehouseController.initializeExitButton(appPain);
+
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        });
+
+    }
 }

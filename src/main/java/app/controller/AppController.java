@@ -20,7 +20,6 @@ public class AppController implements Initializable {
     private static final String URL_EMPLOYEE = "/fxml/employee.fxml";
     private static final String URL_WAREHOUSE = "/fxml/warehouse.fxml";
     private static final String URL_STOCK_ITEM = "/fxml/stockItem.fxml";
-    private static final String URL_WAREHOUSE_VIEW = "/fxml/view-items-warehouse.fxml";
     private static final String URL_ITEM = "/fxml/item.fxml";
     private static final String URL_LOGIN = "/fxml/login.fxml";
 
@@ -113,40 +112,18 @@ public class AppController implements Initializable {
         }
     }
 
-    private void loadWarehouseModule(String urlWarehouse) {
+    public void loadWarehouseModule(String urlWarehouse) {
 
         appPain.getChildren().clear();
 
-        try{
+        try {
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource(urlWarehouse));
             BorderPane warehouseModule = new BorderPane(loader.load());
             appPain.getChildren().add(warehouseModule);
 
             WarehouseController warehouseController = loader.getController();
-
-            warehouseController.initializeViewItemsButton(warehouseTableModel -> {
-                try{
-                    appPain.getChildren().clear();
-                    FXMLLoader loader2 = new FXMLLoader(getClass().getResource(URL_WAREHOUSE_VIEW));
-                    BorderPane itemsOfWarehouse = new BorderPane(loader2.load());
-                    appPain.getChildren().add(itemsOfWarehouse);
-
-                    Stage waitingPopUp = popUpFactory.createWaitingPopUp("Ladujemy dane o przedmiotach i magazynie");
-                    ViewItemsWarehouseController viewItemsWarehouseController = loader2.getController();
-                    waitingPopUp.show();
-                    viewItemsWarehouseController.loadData(warehouseTableModel, () -> {
-                        waitingPopUp.close();
-                    });
-                    viewItemsWarehouseController.initializeExitButton(() -> {
-                        loadWarehouseModule(URL_WAREHOUSE);
-                    });
-
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-
-            });
+            warehouseController.initializeViewItemsButton(appPain);
 
         }catch (IOException e){
             e.printStackTrace();

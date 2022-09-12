@@ -18,6 +18,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -33,6 +35,8 @@ public class ViewItemsWarehouseController implements Initializable {
     private static final String ADD_FXML = "/fxml/buy-item.fxml";
     private static final String DELETE_FXML = "/fxml/delete-item.fxml";
     private static final String TRANSPORT_FXML = "/fxml/transport-item.fxml";
+    private static final String URL_WAREHOUSE = "/fxml/warehouse.fxml";
+    private static final String APP_FXML = "/fxml/app.fxml";
 
     private WarehouseRestClient warehouseRestClient;
     private PopUpFactory popUpFactory;
@@ -176,8 +180,22 @@ public class ViewItemsWarehouseController implements Initializable {
     }
 
 
-    public void initializeExitButton(WarehouseViewExitInitializer initializer){
-        exitButton.setOnAction(actionEvent -> initializer.init());
+    public void initializeExitButton(Pane appPain){
+        exitButton.setOnAction(actionEvent -> {
+            appPain.getChildren().clear();
+
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(URL_WAREHOUSE));
+                BorderPane warehouseModule = new BorderPane(loader.load());
+                appPain.getChildren().add(warehouseModule);
+
+                WarehouseController warehouseController = loader.getController();
+                warehouseController.initializeViewItemsButton(appPain);
+
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        });
     }
 
 

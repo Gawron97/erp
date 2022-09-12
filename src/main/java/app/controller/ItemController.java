@@ -26,25 +26,13 @@ public class ItemController implements Initializable {
     private ItemRestClient itemRestClient;
 
     @FXML
-    private Button addButton;
-
-    @FXML
     private BorderPane borderPane;
-
-    @FXML
-    private Button deleteButton;
-
-    @FXML
-    private Button editButton;
-
-    @FXML
-    private Button refreshButton;
 
     @FXML
     private Button viewButton;
 
     @FXML
-    private TableView<ItemSumTableModel> warehouseTV;
+    private TableView<ItemSumTableModel> itemSumsTV;
 
     public ItemController(){
         popUpFactory = new PopUpFactory();
@@ -54,10 +42,11 @@ public class ItemController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeTableView();
+        initializeViewButton();
     }
 
     private void initializeTableView() {
-        warehouseTV.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        itemSumsTV.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         TableColumn nameColumn = new TableColumn("name");
         nameColumn.setMinWidth(100);
@@ -71,7 +60,7 @@ public class ItemController implements Initializable {
         quantityTypeColumn.setMinWidth(100);
         quantityTypeColumn.setCellValueFactory(new PropertyValueFactory<ItemSumTableModel, String>("quantityType"));
 
-        warehouseTV.getColumns().addAll(nameColumn, quantityColumn, quantityTypeColumn);
+        itemSumsTV.getColumns().addAll(nameColumn, quantityColumn, quantityTypeColumn);
 
         loadItems();
 
@@ -87,7 +76,7 @@ public class ItemController implements Initializable {
             Platform.runLater(() -> {
                 data.clear();
                 data.addAll(itemSums.stream().map(itemSumDto -> ItemSumTableModel.of(itemSumDto)).collect(Collectors.toList()));
-                warehouseTV.setItems(data);
+                itemSumsTV.setItems(data);
                 waitingPopUp.close();
             });
 
@@ -95,4 +84,11 @@ public class ItemController implements Initializable {
 
 
     }
+
+    private void initializeViewButton() {
+
+
+
+    }
+
 }
