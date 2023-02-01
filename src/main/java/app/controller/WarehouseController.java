@@ -102,7 +102,6 @@ public class WarehouseController implements Initializable {
     }
 
 
-
 //    public void initializeViewItemsButton(WarehouseViewButtonInitializer initializer) {
 //        viewItemsButton.setOnAction(actionEvent -> {
 //            WarehouseTableModel selectedWarehouse = warehousesTV.getSelectionModel().getSelectedItem();
@@ -150,7 +149,6 @@ public class WarehouseController implements Initializable {
         });
 
     }
-
 
     public void initializeViewItemsButton(Pane appPain) {
 

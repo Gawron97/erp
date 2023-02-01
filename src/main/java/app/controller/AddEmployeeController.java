@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.springframework.http.HttpStatus;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -45,7 +46,6 @@ public class AddEmployeeController implements Initializable {
         employeesRestClient = new EmployeesRestClient();
     }
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeCancelButton();
@@ -69,13 +69,20 @@ public class AddEmployeeController implements Initializable {
 
         EmployeeDto employeeDto = EmployeeDto.of(name, pesel, surname, salary);
 
-        employeesRestClient.saveEmployee(employeeDto, () -> {
+        employeesRestClient.saveEmployee(employeeDto, httpStatus -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
-                Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal zapisany do bazy danych :)", () -> {
-                    getStage().close();
-                });
-                infoPopUp.show();
+
+                if(httpStatus.equals(HttpStatus.OK)) {
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal zapisany do bazy danych :)",
+                            () -> getStage().close());
+
+                    infoPopUp.show();
+
+                }else{
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Wystapil blad", () -> getStage().close());
+                    errorPopUp.show();
+                }
             });
         });
 

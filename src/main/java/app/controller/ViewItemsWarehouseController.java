@@ -2,8 +2,8 @@ package app.controller;
 
 import app.dto.ItemDto;
 import app.factory.PopUpFactory;
+import app.handler.ButtonInitializer;
 import app.handler.ProcessFinishedHandler;
-import app.handler.WarehouseViewExitInitializer;
 import app.rest.WarehouseRestClient;
 import app.table.ItemTableModel;
 import app.table.WarehouseTableModel;
@@ -23,6 +23,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.net.URL;
@@ -51,9 +52,6 @@ public class ViewItemsWarehouseController implements Initializable {
     private Button addItemButton;
 
     @FXML
-    private Button deleteButton;
-
-    @FXML
     private Button transportButton;
 
     private WarehouseTableModel warehouse;
@@ -67,30 +65,30 @@ public class ViewItemsWarehouseController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeItemsTV();
 //        initializeAddButton();
-        initializeDeleteButton();
+//        initializeDeleteButton();
         initializeTransportButton();
     }
 
-    private void initializeDeleteButton() {
-        deleteButton.setOnAction(actionEvent -> {
-            try {
-                Stage deleteStage = new Stage();
-                deleteStage.initStyle(StageStyle.UNDECORATED);
-                deleteStage.initModality(Modality.APPLICATION_MODAL);
-
-                FXMLLoader loader = new FXMLLoader(getClass().getResource(DELETE_FXML));
-                Scene scene = new Scene(loader.load(), 500, 400);
-                deleteStage.setScene(scene);
-
-                DeleteItemController deleteItemController = loader.getController();
-                deleteItemController.saveIdItem(itemsTV.getSelectionModel().getSelectedItem().getIdItem());
-
-                deleteStage.show();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-        });
-    }
+//    private void initializeDeleteButton() {
+//        deleteButton.setOnAction(actionEvent -> {
+//            try {
+//                Stage deleteStage = new Stage();
+//                deleteStage.initStyle(StageStyle.UNDECORATED);
+//                deleteStage.initModality(Modality.APPLICATION_MODAL);
+//
+//                FXMLLoader loader = new FXMLLoader(getClass().getResource(DELETE_FXML));
+//                Scene scene = new Scene(loader.load(), 500, 400);
+//                deleteStage.setScene(scene);
+//
+//                DeleteItemController deleteItemController = loader.getController();
+//                deleteItemController.saveIdItem(itemsTV.getSelectionModel().getSelectedItem().getIdItem());
+//
+//                deleteStage.show();
+//            }catch (IOException e){
+//                e.printStackTrace();
+//            }
+//        });
+//    }
 
     private void initializeTransportButton() {
         transportButton.setOnAction(actionEvent -> {
@@ -163,7 +161,7 @@ public class ViewItemsWarehouseController implements Initializable {
 
     }
 
-    public void loadData(WarehouseTableModel warehouse, ProcessFinishedHandler handler){
+    public void loadData(WarehouseTableModel warehouse, ButtonInitializer initializer){
         ObservableList<ItemTableModel> data = FXCollections.observableArrayList();
 
         this.warehouse = warehouse;
@@ -173,7 +171,7 @@ public class ViewItemsWarehouseController implements Initializable {
                 List<ItemDto> itemDtoList = warehouseDto.getItems();
                 data.addAll(itemDtoList.stream().map(itemDto -> ItemTableModel.of(itemDto)).collect(Collectors.toList()));
                 itemsTV.setItems(data);
-                handler.handle();
+                initializer.init();
             });
 
         });

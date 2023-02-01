@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.handler.ButtonInitializer;
 import app.handler.ProcessFinishedHandler;
 import app.rest.ItemRestClient;
 import app.table.ItemSumTableModel;
@@ -11,6 +12,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import org.springframework.http.HttpStatus;
 
 import java.net.URL;
 import java.util.List;
@@ -42,8 +44,7 @@ public class ViewItemSumController implements Initializable {
 
     }
 
-
-    public void loadItemSumData(ItemSumTableModel itemSumTableModel, ProcessFinishedHandler handler) {
+    public void loadItemSumData(ItemSumTableModel itemSumTableModel, ButtonInitializer initializer) {
 
         nameTF.setEditable(false);
         quantityTypeTF.setEditable(false);
@@ -55,7 +56,7 @@ public class ViewItemSumController implements Initializable {
                 quantityTypeTF.setText(itemSumDto.getQuantityType());
                 quantityTF.setText(Double.toString(itemSumDto.getQuantity()));
                 warehousesLV.setItems(FXCollections.observableList(itemSumDto.getWarehouseNames()));
-                handler.handle();
+                initializer.init();
             });
         });
 

@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.springframework.http.HttpStatus;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -51,11 +52,16 @@ public class DeleteEmployeeController implements Initializable {
         Stage waitingPopUp = popUpFactory.createWaitingPopUp("Usuwamy pracownika");
         waitingPopUp.show();
 
-        employeesRestClient.deleteEmployee(idEmployee, () -> {
+        employeesRestClient.deleteEmployee(idEmployee, httpStatus -> {
             Platform.runLater(() -> {
-                Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal usuniety", () -> getStage().close());
                 waitingPopUp.close();
-                infoPopUp.show();
+                if(httpStatus.equals(HttpStatus.OK)) {
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal usuniety", () -> getStage().close());
+                    infoPopUp.show();
+                }else {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Blad przy usuwaniu pracownika", () -> getStage().close());
+                    errorPopUp.show();
+                }
             });
         });
     }
@@ -63,7 +69,6 @@ public class DeleteEmployeeController implements Initializable {
     public void setEmployeeToDelete(Integer idEmployee){
         this.idEmployee = idEmployee;
     }
-
 
     private void initializeCancelButton() {
         cancelButton.setOnAction(actionEvent -> getStage().close());

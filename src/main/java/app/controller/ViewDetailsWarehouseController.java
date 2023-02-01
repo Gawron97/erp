@@ -2,6 +2,7 @@ package app.controller;
 
 import app.dto.ItemDto;
 import app.dto.WarehouseDto;
+import app.handler.ButtonInitializer;
 import app.handler.ProcessFinishedHandler;
 import app.rest.WarehouseRestClient;
 import app.table.ItemTableModel;
@@ -15,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.springframework.http.HttpStatus;
 
 import java.net.URL;
 import java.util.List;
@@ -65,12 +67,12 @@ public class ViewDetailsWarehouseController implements Initializable {
 
     }
 
-    public void loadData(WarehouseTableModel warehouse, ProcessFinishedHandler handler){
+    public void loadData(WarehouseTableModel warehouse, ButtonInitializer initializer){
 
         warehouseRestClient.loadWarehouseDetails(warehouse.getIdWarehouse(), warehouseDto -> {
             Platform.runLater(() -> {
                 fillWarehouseData(warehouseDto);
-                handler.handle();
+                initializer.init();
             });
 
         });

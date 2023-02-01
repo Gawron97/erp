@@ -4,6 +4,7 @@ import app.dto.TransportDto;
 import app.dto.TransportItemDto;
 import app.dto.WarehouseCBDto;
 import app.factory.PopUpFactory;
+import app.handler.ButtonInitializer;
 import app.handler.ProcessFinishedHandler;
 import app.rest.ItemRestClient;
 import app.rest.WarehouseRestClient;
@@ -17,6 +18,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.springframework.http.HttpStatus;
 
 import java.net.URL;
 import java.util.*;
@@ -107,11 +109,17 @@ public class TransportItemController implements Initializable {
 
         TransportItemDto transportItemDto = createTransportItemDto();
 
-        itemRestClient.transportItem(transportItemDto, () -> {
+        itemRestClient.transportItem(transportItemDto, httpStatus -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
-                Stage infoPopUp = popUpFactory.createInfoPopUp("Item wyslany do transportu", () -> getStage().close());
-                infoPopUp.show();
+                if(httpStatus.equals(HttpStatus.OK)) {
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Item wyslany do transportu", () -> getStage().close());
+                    infoPopUp.show();
+                }else {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Blad przy wysylaniu itemu do transportu",
+                            () -> getStage().close());
+                    errorPopUp.show();
+                }
             });
         });
 
@@ -133,7 +141,7 @@ public class TransportItemController implements Initializable {
         cancelButton.setOnAction(actionEvent -> getStage().close());
     }
 
-    public void loadTransportData(Integer idItem, Integer idWarehouse, ProcessFinishedHandler handler){
+    public void loadTransportData(Integer idItem, Integer idWarehouse, ButtonInitializer initializer){
 
         itemRestClient.loadTransportData(idItem, transportDto -> {
             Platform.runLater(() -> {
@@ -144,7 +152,7 @@ public class TransportItemController implements Initializable {
                 initializeTruckTV();
                 loadTrucksData(transportDto);
                 loadTransportationTypeCB();
-                handler.handle();
+                initializer.init();
             });
 
         });

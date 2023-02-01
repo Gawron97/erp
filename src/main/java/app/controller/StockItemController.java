@@ -107,6 +107,4 @@ public class StockItemController implements Initializable {
         });
 
     }
-
-
 }

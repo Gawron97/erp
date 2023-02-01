@@ -45,11 +45,7 @@ public class EmployeesRestClient {
     private void processSaveEmployee(EmployeeDto employeeDto, ProcessFinishedHandler saveEmployeeHandler){
         ResponseEntity<EmployeeDto> responseEmployee = restTemplate.postForEntity(EMPLOYEES_URL, employeeDto, EmployeeDto.class);
 
-        if(HttpStatus.OK.equals(responseEmployee.getStatusCode())){
-            saveEmployeeHandler.handle();
-        }else{
-            System.out.println("cos poszlo nie tak :)");
-        }
+        saveEmployeeHandler.handle(responseEmployee.getStatusCode());
     }
 
     public void loadEmployeeData(Integer idEmployee, EmployeeLoadingHandler handler){
@@ -83,7 +79,7 @@ public class EmployeesRestClient {
     private void processDeleteEmployee(Integer idEmployee, ProcessFinishedHandler handler){
         String url = EMPLOYEES_ACTION_URL + "/" + idEmployee;
         restTemplate.delete(url);
-        handler.handle();
+        handler.handle(HttpStatus.OK);
     }
 
 }

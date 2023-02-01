@@ -97,7 +97,6 @@ public class RegisterController implements Initializable {
         }
     }
 
-
     private Stage getStage(){
         return ((Stage) borderPane.getScene().getWindow());
     }

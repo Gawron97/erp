@@ -2,15 +2,14 @@ package app.controller;
 
 import app.dto.ItemDto;
 import app.dto.QuantityTypeDto;
-import app.dto.StockItemDto;
 import app.dto.WarehouseCBDto;
 import app.factory.PopUpFactory;
+import app.handler.ButtonInitializer;
 import app.handler.ProcessFinishedHandler;
 import app.rest.ItemRestClient;
 import app.rest.QuantityTypeRestClient;
 import app.rest.WarehouseRestClient;
 import app.table.StockItemTableModel;
-import app.table.WarehouseTableModel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -20,11 +19,9 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.springframework.http.HttpStatus;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class BuyItemController implements Initializable {
@@ -96,21 +93,29 @@ public class BuyItemController implements Initializable {
 
         ItemDto itemDto = ItemDto.of(name, quantity, price, quantityTypeDto, idWarehouse);
 
-        itemRestClient.saveItem(itemDto, () -> {
+        itemRestClient.saveItem(itemDto, httpStatus -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
-                Stage infoPopUp = popUpFactory.createInfoPopUp("Item zostal kupiony", () -> getStage().close());
-                infoPopUp.show();
+
+                if(httpStatus.equals(HttpStatus.OK))
+                {
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Item zostal kupiony", () -> getStage().close());
+                    infoPopUp.show();
+                }else {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("wystapil blad przy kupowaniu itemu",
+                            () -> getStage().close());
+                    errorPopUp.show();
+                }
             });
         });
 
     }
 
-    public void loadData(StockItemTableModel stockItemTableModel, ProcessFinishedHandler handler){
+    public void loadData(StockItemTableModel stockItemTableModel, ButtonInitializer initializer){
         this.stockItemTableModel = stockItemTableModel;
         loadItemStockDetails();
-        loadWarehouses();
-        Platform.runLater(() -> handler.handle());
+        loadWarehousesCB();
+        Platform.runLater(() -> initializer.init());
     }
 
     private void loadItemStockDetails(){
@@ -124,14 +129,13 @@ public class BuyItemController implements Initializable {
         });
     }
 
-    private void loadWarehouses(){
+    private void loadWarehousesCB(){
         warehouseRestClient.loadWarehousesToCB(warehouseCBDtoList -> {
             Platform.runLater(() -> {
                 warehouseCB.setItems(FXCollections.observableList(warehouseCBDtoList));
             });
         });
     }
-
 
     private Stage getStage(){
         return ((Stage) borderPane.getScene().getWindow());

@@ -1,6 +1,6 @@
 package app.factory;
 
-import app.handler.ProcessFinishedHandler;
+import app.handler.ButtonInitializer;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -19,12 +19,12 @@ public class PopUpFactory {
         stage.initModality(Modality.APPLICATION_MODAL);
 
         VBox vBox = new VBox();
-        vBox.setStyle(waitingPopUpStyle());
+        vBox.setStyle(popUpStyle());
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(10);
 
         Label label = new Label(text);
-        label.setStyle(waitingLabelStyle());
+        label.setStyle(labelStyle());
 
         ProgressBar progressBar = new ProgressBar();
         vBox.getChildren().add(label);
@@ -35,13 +35,13 @@ public class PopUpFactory {
         return stage;
     }
 
-    private String waitingLabelStyle() {
+    private String labelStyle() {
 
         return "-fx-text-fill: #810aa6;";
 
     }
 
-    private String waitingPopUpStyle() {
+    private String popUpStyle() {
 
         return "-fx-background-color: #1367b5; -fx-border-color: #003366;";
 
@@ -60,18 +60,18 @@ public class PopUpFactory {
     }
 
 
-    public Stage createInfoPopUp(String text, ProcessFinishedHandler handler) {
+    public Stage createInfoPopUp(String text, ButtonInitializer initializer) {
 
         Stage stage = new Stage();
         stage.initStyle(StageStyle.UNDECORATED);
 
         VBox vBox = new VBox();
-        vBox.setStyle(waitingPopUpStyle());
+        vBox.setStyle(popUpStyle());
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(10);
 
         Label label = new Label(text);
-        label.setStyle(waitingLabelStyle());
+        label.setStyle(labelStyle());
 
         Button okButton = new Button("OK");
 
@@ -80,12 +80,41 @@ public class PopUpFactory {
         okButton.setOnMouseExited(mouseEvent -> okButton.setStyle(okButtonStyle()));
         okButton.setOnAction(actionEvent -> {
             stage.close();
-            handler.handle();
+            initializer.init();
         });
 
         vBox.getChildren().addAll(label, okButton);
 
+        stage.setScene(new Scene(vBox, 200, 100));
+        stage.initModality(Modality.APPLICATION_MODAL);
 
+        return stage;
+    }
+
+    public Stage createErrorPopUp(String text, ButtonInitializer initializer){
+
+        Stage stage = new Stage();
+        stage.initStyle(StageStyle.UNDECORATED);
+
+        VBox vBox = new VBox();
+        vBox.setStyle(popUpStyle());
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setSpacing(10);
+
+        Label label = new Label(text);
+        label.setStyle(labelStyle());
+
+        Button okButton = new Button("OK");
+
+        okButton.setStyle(okButtonStyle());
+        okButton.setOnMouseEntered(mouseEvent -> okButton.setStyle(okButtonHoverStyle()));
+        okButton.setOnMouseExited(mouseEvent -> okButton.setStyle(okButtonStyle()));
+        okButton.setOnAction(actionEvent -> {
+            stage.close();
+            initializer.init();
+        });
+
+        vBox.getChildren().addAll(label, okButton);
 
         stage.setScene(new Scene(vBox, 200, 100));
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -93,4 +122,5 @@ public class PopUpFactory {
         return stage;
 
     }
+
 }

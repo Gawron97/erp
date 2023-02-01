@@ -67,7 +67,6 @@ public class ItemRestClient {
 
     }
 
-
     public void saveItem(ItemDto itemDto, ProcessFinishedHandler handler) {
 
         Thread thread = new Thread(() -> processSaveItem(itemDto, handler));
@@ -79,10 +78,7 @@ public class ItemRestClient {
 
         ResponseEntity<ItemDto> itemDtoResponse = restTemplate.postForEntity(ITEMS_URL, itemDto, ItemDto.class);
 
-        if(HttpStatus.OK.equals(itemDtoResponse.getStatusCode()))
-            handler.handle();
-        else
-            System.out.println("cos poszlo nie tak");
+        handler.handle(itemDtoResponse.getStatusCode());
 
     }
 
@@ -97,11 +93,7 @@ public class ItemRestClient {
 
         ResponseEntity<ResponseEntity> responseEntity = restTemplate.postForEntity(TRANSPORT_URL, dto, ResponseEntity.class);
 
-        if(HttpStatus.OK.equals(responseEntity.getStatusCode()))
-            handler.handle();
-        else
-            System.out.println("cos poszlo nie tak");
-        //TODO przesylanie do handle boola albo responseEntity i wyswietlanie komuikatu o ew. niepowodzeniu w kontrolerze
+        handler.handle(responseEntity.getStatusCode());
 
     }
 
@@ -113,11 +105,8 @@ public class ItemRestClient {
     private void processDeleteItem(Integer idItem, ProcessFinishedHandler handler) {
 
         String url = ITEMS_URL + "/" + idItem;
-
         restTemplate.delete(url);
-
-        handler.handle();
-
+        handler.handle(HttpStatus.OK);
 
     }
 

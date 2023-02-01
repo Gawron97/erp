@@ -1,8 +1,10 @@
 package app.handler;
 
+import org.springframework.http.HttpStatus;
+
 @FunctionalInterface
 public interface ProcessFinishedHandler {
 
-    void handle();
+    void handle(HttpStatus httpStatus);
 
 }

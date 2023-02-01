@@ -2,6 +2,7 @@ package app.controller;
 
 import app.dto.EmployeeDto;
 import app.factory.PopUpFactory;
+import app.handler.ButtonInitializer;
 import app.handler.ProcessFinishedHandler;
 import app.rest.EmployeesRestClient;
 import javafx.application.Platform;
@@ -11,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import org.springframework.http.HttpStatus;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -75,19 +77,23 @@ public class EditEmployeeController implements Initializable {
         EmployeeDto employeeDto = EmployeeDto.of(name, pesel, surname, salary);
         employeeDto.setIdEmployee(idEmployee);
 
-        employeesRestClient.saveEmployee(employeeDto, () -> {
+        employeesRestClient.saveEmployee(employeeDto, httpStatus -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
-                Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal zapisany do bazy danych :)", () -> {
-                    getStage().close();
-                });
-                infoPopUp.show();
+                if(httpStatus.equals(HttpStatus.OK)) {
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal zapisany do bazy danych :)",
+                            () -> getStage().close());
+                    infoPopUp.show();
+                }else {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Blad przy zapisywaniu pracownika", () -> getStage().close());
+                    errorPopUp.show();
+                }
             });
         });
 
     }
 
-    public void loadEmployeeData(Integer idEmployee, ProcessFinishedHandler handler){
+    public void loadEmployeeData(Integer idEmployee, ButtonInitializer initializer){
         employeesRestClient.loadEmployeeData(idEmployee, employeeDto -> {
             Platform.runLater(() -> {
                 this.idEmployee = employeeDto.getIdEmployee();
@@ -95,11 +101,10 @@ public class EditEmployeeController implements Initializable {
                 nameTextField.setText(employeeDto.getName());
                 surnameTextField.setText(employeeDto.getSurname());
                 salaryTextField.setText(employeeDto.getSalary());
-                handler.handle();
+                initializer.init();
             });
         });
     }
-
 
     private Stage getStage(){
         return ((Stage) borderPane.getScene().getWindow());
