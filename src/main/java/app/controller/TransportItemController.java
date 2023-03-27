@@ -130,7 +130,12 @@ public class TransportItemController implements Initializable {
         Integer idItem = this.idItem;
         double quantityToSend = Double.parseDouble(quantityToSendTF.getText());
         String transportationType = transportationTypeCB.getSelectionModel().getSelectedItem().toString();
-        Integer newWarehouseId = toWarehousesCB.getSelectionModel().getSelectedItem().getIdWarehouse();
+        Optional<WarehouseCBDto> optionalSelectedWarehouse = Optional.ofNullable(toWarehousesCB.getSelectionModel().getSelectedItem());
+        Optional<Integer> newWarehouseId = Optional.empty();
+        if(optionalSelectedWarehouse.isPresent()) {
+            newWarehouseId = Optional.of(optionalSelectedWarehouse.get().getIdWarehouse());
+        }
+
         Integer idTruck = selectedTruck.getIdTruck();
 
         return TransportItemDto.of(idItem, quantityToSend, transportationType, newWarehouseId, idTruck);
