@@ -33,7 +33,6 @@ public class AuthenticatorImpl implements Authenticator{
         ResponseEntity<OperatorLoginCredentialsDto> operatorResponse = restTemplate.postForEntity(AUTHENTICATION_LOGIN_URL,
                 operatorLoginCredentialsDto, OperatorLoginCredentialsDto.class);
 
-
         handler.handle(operatorResponse.getBody().getAuthenticated());
     }
 

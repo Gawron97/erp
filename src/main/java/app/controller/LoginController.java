@@ -98,6 +98,16 @@ public class LoginController implements Initializable {
                 else
                     showIncorrectCredentialsMessage();
             });
+            //TODO
+//            authenticator.authenticateLogin(dto, authResponseCode -> {
+//                Platform.runLater(() -> {
+//                    waitingPopUp.close();
+//                    if(authResponseCode == 200)
+//                        openAppAndCloseLoginPage();
+//                    else
+//                        showIncorrectCredentialsMessage();
+//                });
+
         });
 
 

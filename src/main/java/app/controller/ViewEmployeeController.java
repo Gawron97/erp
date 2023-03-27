@@ -38,7 +38,6 @@ public class ViewEmployeeController implements Initializable {
         employeesRestClient = new EmployeesRestClient();
     }
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         nameTextField.setEditable(false);

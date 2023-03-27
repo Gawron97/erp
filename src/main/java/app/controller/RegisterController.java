@@ -76,6 +76,15 @@ public class RegisterController implements Initializable {
                 else
                     ShowIncorrectDataMessage();
             });
+            //TODO
+//            authenticator.authenticateRegister(dto, authResponseCode -> {
+//                Platform.runLater(() -> {
+//                    waitingPopUp.close();
+//                    if (authResponseCode != 200)
+//                        ShowIncorrectDataMessage();
+//
+//                    OpenLoginPanelCloseRegisterPage();
+//                });
 
         });
     }

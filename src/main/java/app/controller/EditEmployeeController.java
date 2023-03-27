@@ -50,7 +50,6 @@ public class EditEmployeeController implements Initializable {
         popUpFactory = new PopUpFactory();
     }
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeSaveButton();

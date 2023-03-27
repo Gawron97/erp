@@ -82,5 +82,29 @@ public class WarehouseRestClient {
 
     }
 
+    public void saveWarehouse(WarehouseDto warehouseDto, ProcessFinishedHandler handler){
+        Thread thread = new Thread(() -> processSaveWarehouse(warehouseDto, handler));
+        thread.start();
+    }
+
+    private void processSaveWarehouse(WarehouseDto warehouseDto, ProcessFinishedHandler handler) {
+        ResponseEntity responseWarehouse = restTemplate.postForEntity(WAREHOUSES_URL, warehouseDto,
+                ResponseEntity.class);
+
+        handler.handle(responseWarehouse.getStatusCode());
+    }
+
+    public void deleteWarehouse(Integer idWarehouse, ProcessFinishedHandler handler){
+
+        Thread thread = new Thread(() -> processDeleteWarehouse(idWarehouse, handler));
+        thread.start();
+
+    }
+
+    private void processDeleteWarehouse(Integer idWarehouse, ProcessFinishedHandler handler){
+        String url = WAREHOUSES_URL + "/" + idWarehouse;
+        restTemplate.delete(url);
+        handler.handle(HttpStatus.OK);
+    }
 
 }

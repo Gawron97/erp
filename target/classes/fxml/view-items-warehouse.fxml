@@ -13,7 +13,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" styleClass="background" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.controller.ViewItemsWarehouseController">
    <center>
-      <TableView fx:id="itemsTV" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <TableView fx:id="itemsTV" prefHeight="644.0" prefWidth="1022.0" BorderPane.alignment="CENTER">
          <opaqueInsets>
             <Insets top="10.0" />
          </opaqueInsets>
@@ -26,7 +26,7 @@
       <URL value="@../css/warehouses.css" />
    </stylesheets>
    <top>
-      <HBox prefHeight="150.0" prefWidth="1023.0" BorderPane.alignment="CENTER">
+      <HBox prefHeight="79.0" prefWidth="1022.0" BorderPane.alignment="CENTER">
          <children>
             <GridPane prefWidth="200.0">
               <columnConstraints>
@@ -34,8 +34,6 @@
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
@@ -44,9 +42,7 @@
                         <Insets />
                      </GridPane.margin>
                   </Button>
-                  <Button fx:id="addItemButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="100.0" styleClass="warehouse-button" text="Add Item" GridPane.rowIndex="1" />
-                  <Button fx:id="transportButton" mnemonicParsing="false" prefWidth="150.0" styleClass="warehouse-button" text="Transport Item" GridPane.rowIndex="2" />
-                  <Button fx:id="deleteButton" mnemonicParsing="false" prefWidth="100.0" styleClass="warehouse-button" text="Delete Item" GridPane.rowIndex="3" />
+                  <Button fx:id="transportButton" mnemonicParsing="false" prefWidth="150.0" styleClass="warehouse-button" text="Transport Item" GridPane.rowIndex="1" />
                </children>
                <opaqueInsets>
                   <Insets />

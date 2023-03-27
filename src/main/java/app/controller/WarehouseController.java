@@ -2,6 +2,7 @@ package app.controller;
 
 import app.factory.PopUpFactory;
 import app.rest.WarehouseRestClient;
+import app.table.EmployeeTableModel;
 import app.table.WarehouseTableModel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -18,6 +19,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,6 +33,9 @@ public class WarehouseController implements Initializable {
 
     private static final String VIEW_DETAILS_WAREHOUSE = "/fxml/view-details-warehouse.fxml";
     private static final String URL_WAREHOUSE_VIEW_ITEMS = "/fxml/view-items-warehouse.fxml";
+    private static final String ADD_WAREHOUSE_FXML ="/fxml/add-warehouse.fxml";
+    private static final String EDIT_WAREHOUSE_FXML ="/fxml/edit-warehouse.fxml";
+    private static final String DELETE_WAREHOUSE_FXML ="/fxml/delete-warehouse.fxml";
 
     private PopUpFactory popUpFactory;
     private WarehouseRestClient warehouseRestClient;
@@ -68,9 +73,55 @@ public class WarehouseController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeTableView();
-//        initializeAddButton();
-//        initializeDeleteButton();
+        initializeAddButton();
+        initializeEditButton();
+        initializeDeleteButton();
         initializeViewDetailsButton();
+    }
+
+    private void initializeAddButton() {
+
+        addButton.setOnAction(actionEvent -> {
+            try{
+                Stage addStage = new Stage();
+                Scene scene = new Scene(FXMLLoader.load(getClass().getResource(ADD_WAREHOUSE_FXML)), 500, 400);
+                addStage.setScene(scene);
+                addStage.initStyle(StageStyle.UNDECORATED);
+                addStage.initModality(Modality.APPLICATION_MODAL);
+                addStage.show();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+    private void initializeEditButton() {
+        editButton.setOnAction(actionEvent -> {
+            WarehouseTableModel selectedWarehouse = warehousesTV.getSelectionModel().getSelectedItem();
+            if(selectedWarehouse == null)
+                return;
+            else {
+                try {
+                    Stage waitingPopUp = popUpFactory.createWaitingPopUp("Pobieranie danych o magazynie");
+                    waitingPopUp.show();
+                    Stage warehouseEdit = new Stage();
+                    warehouseEdit.initStyle(StageStyle.UNDECORATED);
+                    warehouseEdit.initModality(Modality.APPLICATION_MODAL);
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource(EDIT_WAREHOUSE_FXML));
+                    Scene scene = new Scene(loader.load(), 500, 400);
+                    warehouseEdit.setScene(scene);
+                    EditWarehouseController editController = loader.<EditWarehouseController>getController();
+                    editController.loadWarehouseData(selectedWarehouse.getIdWarehouse(), () -> {
+                        waitingPopUp.close();
+                        warehouseEdit.show();
+                    });
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void initializeViewDetailsButton() {
@@ -101,13 +152,29 @@ public class WarehouseController implements Initializable {
 
     }
 
+    private void initializeDeleteButton() {
+        deleteButton.setOnAction(actionEvent -> {
+            WarehouseTableModel selectedWarehouse = warehousesTV.getSelectionModel().getSelectedItem();
+            if(selectedWarehouse == null)
+                return;
+            else {
+                try {
+                    Stage warehouseDelete = new Stage();
+                    warehouseDelete.initStyle(StageStyle.UNDECORATED);
+                    warehouseDelete.initModality(Modality.APPLICATION_MODAL);
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource(DELETE_WAREHOUSE_FXML));
+                    Scene scene = new Scene(loader.load(), 500, 400);
+                    warehouseDelete.setScene(scene);
+                    DeleteWarehouseController deleteController = loader.<DeleteWarehouseController>getController();
+                    deleteController.setWarehouseIdToDelete(selectedWarehouse.getIdWarehouse());
+                    warehouseDelete.show();
 
-//    public void initializeViewItemsButton(WarehouseViewButtonInitializer initializer) {
-//        viewItemsButton.setOnAction(actionEvent -> {
-//            WarehouseTableModel selectedWarehouse = warehousesTV.getSelectionModel().getSelectedItem();
-//            initializer.init(selectedWarehouse);
-//        });
-//    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
     private void initializeTableView() {
 
