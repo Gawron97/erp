@@ -43,7 +43,7 @@ public class EmployeesRestClient {
     }
 
     private void processSaveEmployee(EmployeeDto employeeDto, ProcessFinishedHandler saveEmployeeHandler){
-        ResponseEntity<EmployeeDto> responseEmployee = restTemplate.postForEntity(EMPLOYEES_URL, employeeDto, EmployeeDto.class);
+        ResponseEntity responseEmployee = restTemplate.postForEntity(EMPLOYEES_URL, employeeDto, ResponseEntity.class);
 
         saveEmployeeHandler.handle(responseEmployee.getStatusCode());
     }
