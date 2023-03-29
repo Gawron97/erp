@@ -69,18 +69,17 @@ public class AddEmployeeController implements Initializable {
 
         EmployeeDto employeeDto = EmployeeDto.of(name, pesel, surname, salary);
 
-        employeesRestClient.saveEmployee(employeeDto, httpStatus -> {
+        employeesRestClient.saveEmployee(employeeDto, response -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
 
-                if(httpStatus.equals(HttpStatus.OK)) {
-                    Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal zapisany do bazy danych :)",
+                if(HttpStatus.OK.equals(response.getStatusCode())) {
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Employee Saved in database",
                             () -> getStage().close());
-
                     infoPopUp.show();
 
                 }else{
-                    Stage errorPopUp = popUpFactory.createErrorPopUp("Wystapil blad", () -> getStage().close());
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Failure during saving employee", () -> getStage().close());
                     errorPopUp.show();
                 }
             });

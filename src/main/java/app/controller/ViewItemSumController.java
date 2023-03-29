@@ -1,21 +1,18 @@
 package app.controller;
 
-import app.handler.ButtonInitializer;
-import app.handler.ProcessFinishedHandler;
+import app.dto.ItemSumDto;
+import app.handler.OnEndedAction;
 import app.rest.ItemRestClient;
 import app.table.ItemSumTableModel;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.springframework.http.HttpStatus;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class ViewItemSumController implements Initializable {
@@ -44,19 +41,24 @@ public class ViewItemSumController implements Initializable {
 
     }
 
-    public void loadItemSumData(ItemSumTableModel itemSumTableModel, ButtonInitializer initializer) {
+    public void loadItemSumData(ItemSumTableModel itemSumTableModel, OnEndedAction onEndedAction) {
 
         nameTF.setEditable(false);
         quantityTypeTF.setEditable(false);
         quantityTF.setEditable(false);
 
-        itemRestClient.loadItemSum(itemSumTableModel.getIdItemSum(), itemSumDto -> {
+        itemRestClient.loadItemSum(itemSumTableModel.getIdItemSum(), response -> {
             Platform.runLater(() -> {
-                nameTF.setText(itemSumDto.getName());
-                quantityTypeTF.setText(itemSumDto.getQuantityType());
-                quantityTF.setText(Double.toString(itemSumDto.getQuantity()));
-                warehousesLV.setItems(FXCollections.observableList(itemSumDto.getWarehouseNames()));
-                initializer.init();
+                if(!HttpStatus.OK.equals(response.getStatusCode())) {
+                    onEndedAction.action(false);
+                } else {
+                    ItemSumDto itemSumDto = (ItemSumDto) response.getBody();
+                    nameTF.setText(itemSumDto.getName());
+                    quantityTypeTF.setText(itemSumDto.getQuantityType());
+                    quantityTF.setText(Double.toString(itemSumDto.getQuantity()));
+                    warehousesLV.setItems(FXCollections.observableList(itemSumDto.getWarehouseNames()));
+                    onEndedAction.action(true);
+                }
             });
         });
 

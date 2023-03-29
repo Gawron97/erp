@@ -2,8 +2,7 @@ package app.controller;
 
 import app.dto.EmployeeDto;
 import app.factory.PopUpFactory;
-import app.handler.ButtonInitializer;
-import app.handler.ProcessFinishedHandler;
+import app.handler.OnEndedAction;
 import app.rest.EmployeesRestClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -76,15 +75,16 @@ public class EditEmployeeController implements Initializable {
         EmployeeDto employeeDto = EmployeeDto.of(name, pesel, surname, salary);
         employeeDto.setIdEmployee(idEmployee);
 
-        employeesRestClient.saveEmployee(employeeDto, httpStatus -> {
+        employeesRestClient.saveEmployee(employeeDto, response -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
-                if(httpStatus.equals(HttpStatus.OK)) {
-                    Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal zapisany do bazy danych :)",
+
+                if(HttpStatus.OK.equals(response.getStatusCode())) {
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Employee edited",
                             () -> getStage().close());
                     infoPopUp.show();
                 }else {
-                    Stage errorPopUp = popUpFactory.createErrorPopUp("Blad przy zapisywaniu pracownika", () -> getStage().close());
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Failure during editing employee", () -> getStage().close());
                     errorPopUp.show();
                 }
             });
@@ -92,15 +92,20 @@ public class EditEmployeeController implements Initializable {
 
     }
 
-    public void loadEmployeeData(Integer idEmployee, ButtonInitializer initializer){
-        employeesRestClient.loadEmployeeData(idEmployee, employeeDto -> {
+    public void loadEmployeeData(Integer idEmployee, OnEndedAction onEndedAction){
+        employeesRestClient.loadEmployeeData(idEmployee, response -> {
             Platform.runLater(() -> {
-                this.idEmployee = employeeDto.getIdEmployee();
-                peselTextField.setText(employeeDto.getPesel());
-                nameTextField.setText(employeeDto.getName());
-                surnameTextField.setText(employeeDto.getSurname());
-                salaryTextField.setText(employeeDto.getSalary());
-                initializer.init();
+                if(!HttpStatus.OK.equals(response.getStatusCode())) {
+                    onEndedAction.action(false);
+                } else {
+                    EmployeeDto employeeDto = (EmployeeDto) response.getBody();
+                    this.idEmployee = employeeDto.getIdEmployee();
+                    peselTextField.setText(employeeDto.getPesel());
+                    nameTextField.setText(employeeDto.getName());
+                    surnameTextField.setText(employeeDto.getSurname());
+                    salaryTextField.setText(employeeDto.getSalary());
+                    onEndedAction.action(true);
+                }
             });
         });
     }

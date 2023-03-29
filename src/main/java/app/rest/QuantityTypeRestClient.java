@@ -3,6 +3,7 @@ package app.rest;
 import app.dto.QuantityTypeDto;
 import app.handler.LoadQuantityTypeHandler;
 import app.handler.ProcessFinishedHandler;
+import app.util.config.CustomResponseErrorHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -17,6 +18,7 @@ public class QuantityTypeRestClient {
 
     public QuantityTypeRestClient(){
         restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new CustomResponseErrorHandler());
     }
 
     public void loadQuantityTypes(LoadQuantityTypeHandler handler){

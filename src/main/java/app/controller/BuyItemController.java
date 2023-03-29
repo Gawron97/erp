@@ -4,8 +4,7 @@ import app.dto.ItemDto;
 import app.dto.QuantityTypeDto;
 import app.dto.WarehouseCBDto;
 import app.factory.PopUpFactory;
-import app.handler.ButtonInitializer;
-import app.handler.ProcessFinishedHandler;
+import app.handler.OnEndedAction;
 import app.rest.ItemRestClient;
 import app.rest.QuantityTypeRestClient;
 import app.rest.WarehouseRestClient;
@@ -22,7 +21,9 @@ import javafx.stage.Stage;
 import org.springframework.http.HttpStatus;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 public class BuyItemController implements Initializable {
 
@@ -93,16 +94,16 @@ public class BuyItemController implements Initializable {
 
         ItemDto itemDto = ItemDto.of(name, quantity, price, quantityTypeDto, idWarehouse);
 
-        itemRestClient.saveItem(itemDto, httpStatus -> {
+        itemRestClient.saveItem(itemDto, response -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
 
-                if(httpStatus.equals(HttpStatus.OK))
+                if(HttpStatus.OK.equals(response.getStatusCode()))
                 {
-                    Stage infoPopUp = popUpFactory.createInfoPopUp("Item zostal kupiony", () -> getStage().close());
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Item bought", () -> getStage().close());
                     infoPopUp.show();
                 }else {
-                    Stage errorPopUp = popUpFactory.createErrorPopUp("wystapil blad przy kupowaniu itemu",
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("There were some problems with buying item",
                             () -> getStage().close());
                     errorPopUp.show();
                 }
@@ -111,11 +112,11 @@ public class BuyItemController implements Initializable {
 
     }
 
-    public void loadData(StockItemTableModel stockItemTableModel, ButtonInitializer initializer){
+    public void loadData(StockItemTableModel stockItemTableModel, OnEndedAction onEndedAction){
         this.stockItemTableModel = stockItemTableModel;
         loadItemStockDetails();
-        loadWarehousesCB();
-        Platform.runLater(() -> initializer.init());
+        loadWarehousesCB(onEndedAction);
+
     }
 
     private void loadItemStockDetails(){
@@ -129,10 +130,16 @@ public class BuyItemController implements Initializable {
         });
     }
 
-    private void loadWarehousesCB(){
-        warehouseRestClient.loadWarehousesToCB(warehouseCBDtoList -> {
+    private void loadWarehousesCB(OnEndedAction onEndedAction){
+        warehouseRestClient.loadWarehousesToCB(response -> {
             Platform.runLater(() -> {
-                warehouseCB.setItems(FXCollections.observableList(warehouseCBDtoList));
+                if(!HttpStatus.OK.equals(response.getStatusCode())) {
+                    onEndedAction.action(false);
+                } else {
+                    List<WarehouseCBDto> warehouseCBDtoList = Stream.of((WarehouseCBDto[]) response.getBody()).toList();
+                    warehouseCB.setItems(FXCollections.observableList(warehouseCBDtoList));
+                    onEndedAction.action(true);
+                }
             });
         });
     }

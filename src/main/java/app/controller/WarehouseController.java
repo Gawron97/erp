@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.dto.WarehouseDto;
 import app.factory.PopUpFactory;
 import app.rest.WarehouseRestClient;
 import app.table.EmployeeTableModel;
@@ -20,11 +21,15 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 //view Items chce zeby pojawialo sie w oknie tym samym co warehouse(zamiast niego) dlatego implementacja otwierania
 //napisana w appController, ktory jest odpowiedzialny za przypisywanie widoku do glownego panelu
@@ -112,9 +117,14 @@ public class WarehouseController implements Initializable {
                     Scene scene = new Scene(loader.load(), 500, 400);
                     warehouseEdit.setScene(scene);
                     EditWarehouseController editController = loader.<EditWarehouseController>getController();
-                    editController.loadWarehouseData(selectedWarehouse.getIdWarehouse(), () -> {
+                    editController.loadWarehouseData(selectedWarehouse.getIdWarehouse(), isDone -> {
                         waitingPopUp.close();
-                        warehouseEdit.show();
+                        if(isDone) {
+                            warehouseEdit.show();
+                        } else {
+                            Stage errorPopUp = popUpFactory.createErrorPopUp("Cannot load warehouse data");
+                            errorPopUp.show();
+                        }
                     });
 
                 } catch (IOException e) {
@@ -139,9 +149,14 @@ public class WarehouseController implements Initializable {
                     warehouseDetailsView.setScene(scene);
                     ViewDetailsWarehouseController viewController = loader.getController();
 
-                    viewController.loadData(selectedWarehouse, () -> {
+                    viewController.loadData(selectedWarehouse, isDone -> {
                         waitingPopUp.close();
-                        warehouseDetailsView.show();
+                        if(isDone) {
+                            warehouseDetailsView.show();
+                        } else {
+                            Stage errorPopUp = popUpFactory.createErrorPopUp("Cannot load warehouse data");
+                            errorPopUp.show();
+                        }
                     });
 
                 } catch (IOException e) {
@@ -202,14 +217,21 @@ public class WarehouseController implements Initializable {
 
         ObservableList<WarehouseTableModel> data = FXCollections.observableArrayList();
 
-        Stage waitingPopUp = popUpFactory.createWaitingPopUp("Pobieranie danych o magazynach");
+        Stage waitingPopUp = popUpFactory.createWaitingPopUp("Searching for warehouses data");
         waitingPopUp.show();
 
-        warehouseRestClient.loadWarehouses(warehouses -> {
+        warehouseRestClient.loadWarehouses(responseWarehouse -> {
             Platform.runLater(() -> {
-                data.clear();
-                data.addAll(warehouses.stream().map(warehouseDto -> WarehouseTableModel.of(warehouseDto)).collect(Collectors.toList()));
-                warehousesTV.setItems(data);
+                if(HttpStatus.OK.equals(responseWarehouse.getStatusCode())) {
+                    List<WarehouseDto> warehouseDtos = Stream.of((WarehouseDto[]) responseWarehouse.getBody()).toList();
+                    data.clear();
+                    data.addAll(warehouseDtos.stream().map(warehouseDto ->
+                            WarehouseTableModel.of(warehouseDto)).collect(Collectors.toList()));
+                    warehousesTV.setItems(data);
+                } else {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Failure while downloading warehouses");
+                    errorPopUp.show();
+                }
                 waitingPopUp.close();
             });
 
@@ -226,23 +248,30 @@ public class WarehouseController implements Initializable {
                 return;
 
             try{
-                appPain.getChildren().clear();
+
                 FXMLLoader loader2 = new FXMLLoader(getClass().getResource(URL_WAREHOUSE_VIEW_ITEMS));
                 BorderPane itemsOfWarehouse = new BorderPane(loader2.load());
-                appPain.getChildren().add(itemsOfWarehouse);
 
-                Stage waitingPopUp = popUpFactory.createWaitingPopUp("Ladujemy dane o przedmiotach w wybranym magazynie");
+                Stage waitingPopUp = popUpFactory.createWaitingPopUp("Downloading data about items in warehouse");
                 waitingPopUp.show();
                 ViewItemsWarehouseController viewItemsWarehouseController = loader2.getController();
-                viewItemsWarehouseController.loadData(warehouseTableModel, () -> {
+                viewItemsWarehouseController.loadData(warehouseTableModel, isDone -> {
+                    if(isDone) {
+                        appPain.getChildren().clear();
+                        appPain.getChildren().add(itemsOfWarehouse);
+                        viewItemsWarehouseController.initializeExitButton(appPain);
+                    }
                     waitingPopUp.close();
                 });
-                viewItemsWarehouseController.initializeExitButton(appPain);
 
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         });
 
     }
+    private Stage getStage(){
+        return ((Stage) borderPane.getScene().getWindow());
+    }
+
 }

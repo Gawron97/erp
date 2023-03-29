@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.dto.ItemSumDto;
 import app.factory.PopUpFactory;
 import app.rest.ItemRestClient;
 import app.table.ItemSumTableModel;
@@ -18,11 +19,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ItemController implements Initializable {
 
@@ -75,14 +79,20 @@ public class ItemController implements Initializable {
     private void loadItems() {
         ObservableList<ItemSumTableModel> data = FXCollections.observableArrayList();
 
-        Stage waitingPopUp = popUpFactory.createWaitingPopUp("Pobieranie danych o przedmiotach");
+        Stage waitingPopUp = popUpFactory.createWaitingPopUp("Downloading items data");
         waitingPopUp.show();
 
-        itemRestClient.loadItemsSum(itemSums -> {
+        itemRestClient.loadItemsSum(response -> {
             Platform.runLater(() -> {
-                data.clear();
-                data.addAll(itemSums.stream().map(itemSumDto -> ItemSumTableModel.of(itemSumDto)).collect(Collectors.toList()));
-                itemSumsTV.setItems(data);
+                if(!HttpStatus.OK.equals(response.getStatusCode())) {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Downloading data failed");
+                    errorPopUp.show();
+                } else {
+                    List<ItemSumDto> itemSums = Stream.of((ItemSumDto[]) response.getBody()).toList();
+                    data.clear();
+                    data.addAll(itemSums.stream().map(itemSumDto -> ItemSumTableModel.of(itemSumDto)).toList());
+                    itemSumsTV.setItems(data);
+                }
                 waitingPopUp.close();
             });
 
@@ -111,10 +121,15 @@ public class ItemController implements Initializable {
                 Scene scene = new Scene(loader.load(), 500, 400);
 
                 ViewItemSumController viewItemSumController = loader.getController();
-                viewItemSumController.loadItemSumData(itemSumTableModel, () -> {
-                    viewItemSum.setScene(scene);
+                viewItemSum.setScene(scene);
+                viewItemSumController.loadItemSumData(itemSumTableModel, isDone -> {
                     waitingPopUp.close();
-                    viewItemSum.show();
+                    if(isDone) {
+                        viewItemSum.show();
+                    } else {
+                        Stage errorPopUp = popUpFactory.createErrorPopUp("Cannot load itemSum details data");
+                        errorPopUp.show();
+                    }
                 });
 
             }catch (IOException e){

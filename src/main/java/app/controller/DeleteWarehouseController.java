@@ -55,10 +55,10 @@ public class DeleteWarehouseController implements Initializable {
             Platform.runLater(() -> {
                 waitingPopUp.close();
                 if(httpStatus.equals(HttpStatus.OK)) {
-                    Stage infoPopUp = popUpFactory.createInfoPopUp("Magazyn zostal usuniety", () -> getStage().close());
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Warehouse deleted", () -> getStage().close());
                     infoPopUp.show();
                 }else {
-                    Stage errorPopUp = popUpFactory.createErrorPopUp("Blad przy usuwaniu magazynu", () -> getStage().close());
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Something go wrong while deleting warehouse", () -> getStage().close());
                     errorPopUp.show();
                 }
             });

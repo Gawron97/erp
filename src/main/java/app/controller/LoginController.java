@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.net.URL;
@@ -90,31 +91,23 @@ public class LoginController implements Initializable {
         dto.setLogin(login);
         dto.setPassword(password);
 
-        authenticator.authenticateLogin(dto, authenticationResult -> {
+        authenticator.authenticateLogin(dto, response -> {
             Platform.runLater(() -> {
-                waitingPopUp.close();
-                if(authenticationResult)
+                if(!HttpStatus.OK.equals(response.getStatusCode())) {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Someting went wrong during logging, try again");
+                    errorPopUp.show();
+                } else if(!((OperatorLoginCredentialsDto) response.getBody()).getAuthenticated()) {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Credentials are incorrect");
+                    errorPopUp.show();
+                } else {
                     openAppAndCloseLoginPage();
-                else
-                    showIncorrectCredentialsMessage();
-            });
-            //TODO
-//            authenticator.authenticateLogin(dto, authResponseCode -> {
-//                Platform.runLater(() -> {
-//                    waitingPopUp.close();
-//                    if(authResponseCode == 200)
-//                        openAppAndCloseLoginPage();
-//                    else
-//                        showIncorrectCredentialsMessage();
-//                });
+                }
+                waitingPopUp.close();
 
+            });
         });
 
 
-    }
-
-    private void showIncorrectCredentialsMessage() {
-        System.out.println("zle dane");
     }
 
     private void openAppAndCloseLoginPage() {

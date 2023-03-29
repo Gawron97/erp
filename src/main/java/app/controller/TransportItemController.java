@@ -4,8 +4,7 @@ import app.dto.TransportDto;
 import app.dto.TransportItemDto;
 import app.dto.WarehouseCBDto;
 import app.factory.PopUpFactory;
-import app.handler.ButtonInitializer;
-import app.handler.ProcessFinishedHandler;
+import app.handler.OnEndedAction;
 import app.rest.ItemRestClient;
 import app.rest.WarehouseRestClient;
 import app.table.TruckTableModel;
@@ -21,7 +20,11 @@ import javafx.stage.Stage;
 import org.springframework.http.HttpStatus;
 
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 public class TransportItemController implements Initializable {
 
@@ -109,14 +112,14 @@ public class TransportItemController implements Initializable {
 
         TransportItemDto transportItemDto = createTransportItemDto();
 
-        itemRestClient.transportItem(transportItemDto, httpStatus -> {
+        itemRestClient.transportItem(transportItemDto, response -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
-                if(httpStatus.equals(HttpStatus.OK)) {
-                    Stage infoPopUp = popUpFactory.createInfoPopUp("Item wyslany do transportu", () -> getStage().close());
+                if(HttpStatus.OK.equals(response.getStatusCode())) {
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Item send to transport", () -> getStage().close());
                     infoPopUp.show();
                 }else {
-                    Stage errorPopUp = popUpFactory.createErrorPopUp("Blad przy wysylaniu itemu do transportu",
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Failure with sending item to transport",
                             () -> getStage().close());
                     errorPopUp.show();
                 }
@@ -146,18 +149,22 @@ public class TransportItemController implements Initializable {
         cancelButton.setOnAction(actionEvent -> getStage().close());
     }
 
-    public void loadTransportData(Integer idItem, Integer idWarehouse, ButtonInitializer initializer){
+    public void loadTransportData(Integer idItem, Integer idWarehouse, OnEndedAction onEndedAction){
 
-        itemRestClient.loadTransportData(idItem, transportDto -> {
+        itemRestClient.loadTransportData(idItem, response -> {
             Platform.runLater(() -> {
-                this.idItem = idItem;
-                this.idWarehouse = idWarehouse;
-                fillItemDetails(transportDto);
-                loadWarehousesChoiceBox();
-                initializeTruckTV();
-                loadTrucksData(transportDto);
-                loadTransportationTypeCB();
-                initializer.init();
+                if(!HttpStatus.OK.equals(response.getStatusCode())) {
+                    onEndedAction.action(false);
+                } else {
+                    this.idItem = idItem;
+                    this.idWarehouse = idWarehouse;
+                    fillItemDetails((TransportDto) response.getBody());
+                    loadWarehousesChoiceBox(onEndedAction);
+                    initializeTruckTV();
+                    loadTrucksData((TransportDto) response.getBody());
+                    loadTransportationTypeCB();
+                    onEndedAction.action(true);
+                }
             });
 
         });
@@ -194,11 +201,16 @@ public class TransportItemController implements Initializable {
 
     }
 
-    private void loadWarehousesChoiceBox() {
+    private void loadWarehousesChoiceBox(OnEndedAction onEndedAction) {
 
-        warehouseRestClient.loadWarehousesToCB(warehouseCBDtoList -> {
+        warehouseRestClient.loadWarehousesToCB(response -> {
             Platform.runLater(() -> {
-                toWarehousesCB.setItems(FXCollections.observableList(warehouseCBDtoList));
+                if(!HttpStatus.OK.equals(response.getStatusCode())) {
+                    onEndedAction.action(false);
+                } else {
+                    List<WarehouseCBDto> warehouseCBDtoList = Stream.of((WarehouseCBDto[]) response.getBody()).toList();
+                    toWarehousesCB.setItems(FXCollections.observableList(warehouseCBDtoList));
+                }
             });
         });
     }
