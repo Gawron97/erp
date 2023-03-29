@@ -3,6 +3,8 @@ package app.rest;
 import app.dto.OperatorLoginCredentialsDto;
 import app.dto.OperatorRegisterCredentialsDto;
 import app.handler.AuthenticationResultHandler;
+import app.handler.ProcessFinishedHandler;
+import app.util.config.CustomResponseErrorHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -14,11 +16,12 @@ public class AuthenticatorImpl implements Authenticator{
     private final RestTemplate restTemplate;
 
     public AuthenticatorImpl() {
-        this.restTemplate = new RestTemplate();
+        restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new CustomResponseErrorHandler());
     }
 
     @Override
-    public void authenticateLogin(OperatorLoginCredentialsDto operatorLoginCredentialsDto, AuthenticationResultHandler authenticationResultHandler) {
+    public void authenticateLogin(OperatorLoginCredentialsDto operatorLoginCredentialsDto, ProcessFinishedHandler authenticationResultHandler) {
         Runnable authenticationTask = () -> {
             processLoginAuthentication(operatorLoginCredentialsDto, authenticationResultHandler);
         };
@@ -28,26 +31,26 @@ public class AuthenticatorImpl implements Authenticator{
 
     }
 
-    private void processLoginAuthentication(OperatorLoginCredentialsDto operatorLoginCredentialsDto, AuthenticationResultHandler handler) {
+    private void processLoginAuthentication(OperatorLoginCredentialsDto operatorLoginCredentialsDto, ProcessFinishedHandler handler) {
 
         ResponseEntity<OperatorLoginCredentialsDto> operatorResponse = restTemplate.postForEntity(AUTHENTICATION_LOGIN_URL,
                 operatorLoginCredentialsDto, OperatorLoginCredentialsDto.class);
 
-        handler.handle(operatorResponse.getBody().getAuthenticated());
+        handler.handle(operatorResponse);
     }
 
     @Override
-    public void authenticateRegister(OperatorRegisterCredentialsDto dto, AuthenticationResultHandler handler) {
+    public void authenticateRegister(OperatorRegisterCredentialsDto dto, ProcessFinishedHandler handler) {
         Thread thread = new Thread(() -> processRegisterAuthentication(dto, handler));
         thread.setDaemon(true);
         thread.start();
     }
 
-    private void processRegisterAuthentication(OperatorRegisterCredentialsDto dto, AuthenticationResultHandler handler) {
+    private void processRegisterAuthentication(OperatorRegisterCredentialsDto dto, ProcessFinishedHandler handler) {
         ResponseEntity<OperatorRegisterCredentialsDto> response =
                 restTemplate.postForEntity(AUTHENTICATION_REGISTER_URL, dto, OperatorRegisterCredentialsDto.class);
 
-        handler.handle(response.getBody().getAuthenticated());
+        handler.handle(response);
 
 
     }

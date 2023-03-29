@@ -5,6 +5,7 @@ import app.dto.ItemSumDto;
 import app.dto.TransportDto;
 import app.dto.TransportItemDto;
 import app.handler.*;
+import app.util.config.CustomResponseErrorHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -21,14 +22,15 @@ public class ItemRestClient {
 
     public ItemRestClient(){
         restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new CustomResponseErrorHandler());
     }
 
     public void loadItems(LoadItemsHandler handler){
-        Thread thread = new Thread(() -> processloadItems(handler));
+        Thread thread = new Thread(() -> processLoadItems(handler));
         thread.start();
     }
 
-    public void processloadItems(LoadItemsHandler handler){
+    public void processLoadItems(LoadItemsHandler handler){
 
         ResponseEntity<ItemDto[]> responseItems = restTemplate.getForEntity(ITEMS_URL, ItemDto[].class);
 
@@ -36,34 +38,31 @@ public class ItemRestClient {
 
     }
 
-    public void loadItemsSum(LoadItemSumsHandler handler){
+    public void loadItemsSum(ProcessFinishedHandler handler){
         Thread thread = new Thread(() -> processloadItemsSum(handler));
         thread.start();
     }
 
-    public void processloadItemsSum(LoadItemSumsHandler handler){
+    public void processloadItemsSum(ProcessFinishedHandler handler){
 
         ResponseEntity<ItemSumDto[]> responseItems = restTemplate.getForEntity(ITEMS_SUM_URL, ItemSumDto[].class);
 
-        handler.handle(Arrays.stream(responseItems.getBody()).toList());
+        handler.handle(responseItems);
 
     }
 
-    public void loadItemSum(Integer idItemSum, LoadItemSumHandler handler){
+    public void loadItemSum(Integer idItemSum, ProcessFinishedHandler handler){
         Thread thread = new Thread(() -> processLoadItemSum(idItemSum, handler));
         thread.start();
     }
 
-    private void processLoadItemSum(Integer idItemSum, LoadItemSumHandler handler) {
+    private void processLoadItemSum(Integer idItemSum, ProcessFinishedHandler handler) {
 
         String url = ITEMS_SUM_URL + "/" + idItemSum;
 
         ResponseEntity<ItemSumDto> responseItemSum = restTemplate.getForEntity(url, ItemSumDto.class);
 
-        if(HttpStatus.OK.equals(responseItemSum.getStatusCode()))
-            handler.handle(responseItemSum.getBody());
-        else
-            System.out.println("cos nie tak");
+        handler.handle(responseItemSum);
 
     }
 
@@ -78,7 +77,7 @@ public class ItemRestClient {
 
         ResponseEntity<ItemDto> itemDtoResponse = restTemplate.postForEntity(ITEMS_URL, itemDto, ItemDto.class);
 
-        handler.handle(itemDtoResponse.getStatusCode());
+        handler.handle(itemDtoResponse);
 
     }
 
@@ -93,7 +92,7 @@ public class ItemRestClient {
 
         ResponseEntity<ResponseEntity> responseEntity = restTemplate.postForEntity(TRANSPORT_URL, dto, ResponseEntity.class);
 
-        handler.handle(responseEntity.getStatusCode());
+        handler.handle(responseEntity);
 
     }
 
@@ -106,21 +105,21 @@ public class ItemRestClient {
 
         String url = ITEMS_URL + "/" + idItem;
         restTemplate.delete(url);
-        handler.handle(HttpStatus.OK);
+        handler.handle(ResponseEntity.ok().build());
 
     }
 
-    public void loadTransportData(Integer idItem, TransportLoadingHandler handler) {
+    public void loadTransportData(Integer idItem, ProcessFinishedHandler handler) {
         Thread thread = new Thread(() -> processLoadingTransportData(idItem, handler));
         thread.start();
     }
 
-    private void processLoadingTransportData(Integer idItem, TransportLoadingHandler handler) {
+    private void processLoadingTransportData(Integer idItem, ProcessFinishedHandler handler) {
 
         String url = TRANSPORT_URL + "/" + idItem;
 
         ResponseEntity<TransportDto> itemResponse = restTemplate.getForEntity(url, TransportDto.class);
 
-        handler.handle(itemResponse.getBody());
+        handler.handle(itemResponse);
     }
 }

@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.dto.StockItemDto;
 import app.factory.PopUpFactory;
 import app.rest.StockItemRestClient;
 import app.table.ItemSumTableModel;
@@ -18,11 +19,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageConverter;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 public class StockItemController implements Initializable {
 
@@ -64,9 +68,14 @@ public class StockItemController implements Initializable {
                 buyItem.setScene(scene);
 
                 BuyItemController buyItemController = loader.getController();
-                buyItemController.loadData(stockItemTV.getSelectionModel().getSelectedItem(), () -> {
+                buyItemController.loadData(stockItemTV.getSelectionModel().getSelectedItem(), isDone -> {
                     waitingPopUp.close();
-                    buyItem.show();
+                    if(isDone) {
+                        buyItem.show();
+                    } else {
+                        Stage errorPopUp = popUpFactory.createErrorPopUp("Cannot load data");
+                        errorPopUp.show();
+                    }
                 });
 
             }catch (IOException e){
@@ -98,11 +107,20 @@ public class StockItemController implements Initializable {
 
     private void loadStockItems() {
 
-        stockItemRestClient.loadStockItems(stockItemDtoList -> {
+        Stage waitingPopUp = popUpFactory.createWaitingPopUp("Searching for stock items data");
+        waitingPopUp.show();
+
+        stockItemRestClient.loadStockItems(response -> {
             Platform.runLater(() -> {
-                System.out.println(stockItemDtoList.get(0).getPrice());
-                stockItemTV.setItems(FXCollections.observableList(stockItemDtoList
-                        .stream().map(stockItemDto -> StockItemTableModel.of(stockItemDto)).toList()));
+                waitingPopUp.close();
+                if(!HttpStatus.OK.equals(response.getStatusCode())) {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Downloading data failed");
+                    errorPopUp.show();
+                } else {
+                    List<StockItemDto> stockItemDtoList = Stream.of((StockItemDto[]) response.getBody()).toList();
+                    stockItemTV.setItems(FXCollections.observableList(stockItemDtoList
+                            .stream().map(stockItemDto -> StockItemTableModel.of(stockItemDto)).toList()));
+                }
             });
         });
 

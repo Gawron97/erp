@@ -49,17 +49,17 @@ public class DeleteEmployeeController implements Initializable {
 
     private void deleteEmployee(){
 
-        Stage waitingPopUp = popUpFactory.createWaitingPopUp("Usuwamy pracownika");
+        Stage waitingPopUp = popUpFactory.createWaitingPopUp("We deleting employee");
         waitingPopUp.show();
 
-        employeesRestClient.deleteEmployee(idEmployee, httpStatus -> {
+        employeesRestClient.deleteEmployee(idEmployee, response -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
-                if(httpStatus.equals(HttpStatus.OK)) {
-                    Stage infoPopUp = popUpFactory.createInfoPopUp("Pracownik zostal usuniety", () -> getStage().close());
+                if(HttpStatus.OK.equals(response.getStatusCode())) {
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Employee deleted", () -> getStage().close());
                     infoPopUp.show();
                 }else {
-                    Stage errorPopUp = popUpFactory.createErrorPopUp("Blad przy usuwaniu pracownika", () -> getStage().close());
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Failure while deleting employee", () -> getStage().close());
                     errorPopUp.show();
                 }
             });

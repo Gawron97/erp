@@ -81,17 +81,17 @@ public class AddWarehouseController implements Initializable {
 
         WarehouseDto warehouseDto = WarehouseDto.of(name, addressDto);
 
-        warehouseRestClient.saveWarehouse(warehouseDto, responseCode -> {
+        warehouseRestClient.saveWarehouse(warehouseDto, response -> {
             Platform.runLater(() -> {
                 waitingPopUp.close();
-
-                if(responseCode.equals(HttpStatus.OK)) {
-                    Stage infoPopUp = popUpFactory.createInfoPopUp("Magazyn zostal zapisany do bazy danych :)",
+                if(HttpStatus.OK.equals(response.getStatusCode())) {
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Warehouse saved in database",
                             () -> getStage().close());
 
                     infoPopUp.show();
                 }else{
-                    Stage errorPopUp = popUpFactory.createErrorPopUp("Wystapil blad", () -> getStage().close());
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Something go wrong during saving warehouse",
+                            () -> getStage().close());
                     errorPopUp.show();
                 }
             });

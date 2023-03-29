@@ -4,6 +4,7 @@ import app.dto.EmployeeDto;
 import app.handler.ProcessFinishedHandler;
 import app.handler.EmployeeLoadingHandler;
 import app.handler.LoadEmployeeHandler;
+import app.util.config.CustomResponseErrorHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -19,20 +20,21 @@ public class EmployeesRestClient {
 
     public EmployeesRestClient(){
         restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new CustomResponseErrorHandler());
     }
 
 
-    public void loadEmployees(LoadEmployeeHandler handler){
+    public void loadEmployees(ProcessFinishedHandler handler){
         Thread thread = new Thread(() -> processLoadingEmployees(handler));
         thread.setDaemon(true);
         thread.start();
     }
 
-    private void processLoadingEmployees(LoadEmployeeHandler handler){
+    private void processLoadingEmployees(ProcessFinishedHandler handler){
 
         ResponseEntity<EmployeeDto[]> employees = restTemplate.getForEntity(EMPLOYEES_URL, EmployeeDto[].class);
 
-        handler.handle(Arrays.stream(employees.getBody()).toList());
+        handler.handle(employees);
     }
 
     public void saveEmployee(EmployeeDto employeeDto, ProcessFinishedHandler saveEmployeeHandler){
@@ -45,25 +47,21 @@ public class EmployeesRestClient {
     private void processSaveEmployee(EmployeeDto employeeDto, ProcessFinishedHandler saveEmployeeHandler){
         ResponseEntity responseEmployee = restTemplate.postForEntity(EMPLOYEES_URL, employeeDto, ResponseEntity.class);
 
-        saveEmployeeHandler.handle(responseEmployee.getStatusCode());
+        saveEmployeeHandler.handle(responseEmployee);
     }
 
-    public void loadEmployeeData(Integer idEmployee, EmployeeLoadingHandler handler){
+    public void loadEmployeeData(Integer idEmployee, ProcessFinishedHandler handler){
 
         Thread thread = new Thread(() -> processLoadEmployeeData(idEmployee, handler));
         thread.start();
 
     }
 
-    private void processLoadEmployeeData(Integer idEmployee, EmployeeLoadingHandler handler) {
+    private void processLoadEmployeeData(Integer idEmployee, ProcessFinishedHandler handler) {
         String url = EMPLOYEES_ACTION_URL + "/" + idEmployee;
         ResponseEntity<EmployeeDto> responseEmployee = restTemplate.getForEntity(url, EmployeeDto.class);
 
-        if(HttpStatus.OK.equals(responseEmployee.getStatusCode())){
-            handler.handle(responseEmployee.getBody());
-        }else{
-            System.out.println("cos poszlo nie tak :)");
-        }
+        handler.handle(responseEmployee);
 
     }
 
@@ -79,7 +77,7 @@ public class EmployeesRestClient {
     private void processDeleteEmployee(Integer idEmployee, ProcessFinishedHandler handler){
         String url = EMPLOYEES_ACTION_URL + "/" + idEmployee;
         restTemplate.delete(url);
-        handler.handle(HttpStatus.OK);
+        handler.handle(ResponseEntity.ok().build());
     }
 
 }

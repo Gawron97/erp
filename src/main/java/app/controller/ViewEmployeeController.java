@@ -1,7 +1,7 @@
 package app.controller;
 
-import app.handler.ButtonInitializer;
-import app.handler.ProcessFinishedHandler;
+import app.dto.EmployeeDto;
+import app.handler.OnEndedAction;
 import app.rest.EmployeesRestClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -47,13 +47,18 @@ public class ViewEmployeeController implements Initializable {
 
     }
 
-    public void loadEmployeeData(Integer idEmployee, ButtonInitializer initializer){
-        employeesRestClient.loadEmployeeData(idEmployee, employeeDto -> {
+    public void loadEmployeeData(Integer idEmployee, OnEndedAction onEndedAction){
+        employeesRestClient.loadEmployeeData(idEmployee, response -> {
             Platform.runLater(() -> {
-                nameTextField.setText(employeeDto.getName());
-                surnameTextField.setText(employeeDto.getSurname());
-                salaryTextField.setText(employeeDto.getSalary());
-                initializer.init();
+               if(!HttpStatus.OK.equals(response.getStatusCode())) {
+                   onEndedAction.action(false);
+               } else {
+                   EmployeeDto employeeDto = (EmployeeDto) response.getBody();
+                   nameTextField.setText(employeeDto.getName());
+                   surnameTextField.setText(employeeDto.getSurname());
+                   salaryTextField.setText(employeeDto.getSalary());
+                   onEndedAction.action(true);
+               }
             });
         });
     }

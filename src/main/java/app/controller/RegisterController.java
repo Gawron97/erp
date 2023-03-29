@@ -14,6 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.net.URL;
@@ -60,7 +61,7 @@ public class RegisterController implements Initializable {
 
     private void performRegistrationAuthentication() {
 
-        Stage waitingPopUp = popUpFactory.createWaitingPopUp("Tworzymy konto");
+        Stage waitingPopUp = popUpFactory.createWaitingPopUp("Creating account");
         waitingPopUp.show();
 
         String pesel = peselTF.getText();
@@ -68,29 +69,20 @@ public class RegisterController implements Initializable {
         String password = passwordTF.getText();
 
         OperatorRegisterCredentialsDto dto = OperatorRegisterCredentialsDto.of(pesel, login, password);
-        authenticator.authenticateRegister(dto, authenticationResult -> {
+        authenticator.authenticateRegister(dto, response -> {
             Platform.runLater(() -> {
+                OpenLoginPanelCloseRegisterPage();
                 waitingPopUp.close();
-                if (authenticationResult)
-                    OpenLoginPanelCloseRegisterPage();
-                else
-                    ShowIncorrectDataMessage();
+                if (!HttpStatus.OK.equals(response.getStatusCode())) {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Something go wrong during logging, try again");
+                    errorPopUp.show();
+                } else if(!((OperatorRegisterCredentialsDto) response.getBody()).getAuthenticated()) {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("You are not allowed to register");
+                    errorPopUp.show();
+                }
             });
-            //TODO
-//            authenticator.authenticateRegister(dto, authResponseCode -> {
-//                Platform.runLater(() -> {
-//                    waitingPopUp.close();
-//                    if (authResponseCode != 200)
-//                        ShowIncorrectDataMessage();
-//
-//                    OpenLoginPanelCloseRegisterPage();
-//                });
 
         });
-    }
-
-    private void ShowIncorrectDataMessage() {
-        System.out.println("zle dane przy rejestrowaniu");
     }
 
     private void OpenLoginPanelCloseRegisterPage() {

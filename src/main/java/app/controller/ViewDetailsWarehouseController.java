@@ -1,15 +1,10 @@
 package app.controller;
 
-import app.dto.ItemDto;
 import app.dto.WarehouseDto;
-import app.handler.ButtonInitializer;
-import app.handler.ProcessFinishedHandler;
+import app.handler.OnEndedAction;
 import app.rest.WarehouseRestClient;
-import app.table.ItemTableModel;
 import app.table.WarehouseTableModel;
 import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -19,9 +14,7 @@ import javafx.stage.Stage;
 import org.springframework.http.HttpStatus;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class ViewDetailsWarehouseController implements Initializable {
 
@@ -67,12 +60,16 @@ public class ViewDetailsWarehouseController implements Initializable {
 
     }
 
-    public void loadData(WarehouseTableModel warehouse, ButtonInitializer initializer){
+    public void loadData(WarehouseTableModel warehouse, OnEndedAction onEndedAction){
 
-        warehouseRestClient.loadWarehouseDetails(warehouse.getIdWarehouse(), warehouseDto -> {
+        warehouseRestClient.loadWarehouse(warehouse.getIdWarehouse(), responseEntity -> {
             Platform.runLater(() -> {
-                fillWarehouseData(warehouseDto);
-                initializer.init();
+                if(!HttpStatus.OK.equals(responseEntity.getStatusCode())) {
+                    onEndedAction.action(false);
+                } else {
+                    fillWarehouseData((WarehouseDto) responseEntity.getBody());
+                    onEndedAction.action(true);
+                }
             });
 
         });

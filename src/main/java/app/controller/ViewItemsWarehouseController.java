@@ -1,9 +1,9 @@
 package app.controller;
 
 import app.dto.ItemDto;
+import app.dto.WarehouseDto;
 import app.factory.PopUpFactory;
-import app.handler.ButtonInitializer;
-import app.handler.ProcessFinishedHandler;
+import app.handler.OnEndedAction;
 import app.rest.WarehouseRestClient;
 import app.table.ItemTableModel;
 import app.table.WarehouseTableModel;
@@ -23,7 +23,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
@@ -81,9 +80,15 @@ public class ViewItemsWarehouseController implements Initializable {
                 TransportItemController transportItemController = loader.getController();
 
                 transportItemController.loadTransportData(itemsTV.getSelectionModel().getSelectedItem().getIdItem(),
-                        warehouse.getIdWarehouse(), () -> {
+                        warehouse.getIdWarehouse(), isDone -> {
                     waitingPopUp.close();
-                    transportStage.show();
+                    if(isDone) {
+                        transportStage.show();
+                    } else {
+                        Stage errorPopUp = popUpFactory.createErrorPopUp("Something went wrong with initializing data");
+                        errorPopUp.show();
+                    }
+
                 });
 
             }catch (IOException e){
@@ -112,18 +117,23 @@ public class ViewItemsWarehouseController implements Initializable {
 
     }
 
-    public void loadData(WarehouseTableModel warehouse, ButtonInitializer initializer){
+    public void loadData(WarehouseTableModel warehouse, OnEndedAction initializer){
         ObservableList<ItemTableModel> data = FXCollections.observableArrayList();
 
         this.warehouse = warehouse;
 
-        warehouseRestClient.loadWarehouse(warehouse.getIdWarehouse(), warehouseDto -> {
+        warehouseRestClient.loadWarehouse(warehouse.getIdWarehouse(), response -> {
             Platform.runLater(() -> {
-                List<ItemDto> itemDtoList = warehouseDto.getItems();
-                data.addAll(itemDtoList.stream().map(itemDto -> ItemTableModel.of(itemDto)).collect(Collectors.toList()));
-                itemsTV.setItems(data);
-                warehouseTF.setText(warehouseDto.getName());
-                initializer.init();
+                if(!HttpStatus.OK.equals(response.getStatusCode())) {
+                    initializer.action(false);
+                } else {
+                    WarehouseDto warehouseDto = (WarehouseDto) response.getBody();
+                    List<ItemDto> itemDtoList = warehouseDto.getItems();
+                    data.addAll(itemDtoList.stream().map(itemDto -> ItemTableModel.of(itemDto)).collect(Collectors.toList()));
+                    itemsTV.setItems(data);
+                    warehouseTF.setText(warehouseDto.getName());
+                    initializer.action(true);
+                }
             });
 
         });

@@ -2,6 +2,8 @@ package app.rest;
 
 import app.dto.StockItemDto;
 import app.handler.LoadStockItemsHandler;
+import app.handler.ProcessFinishedHandler;
+import app.util.config.CustomResponseErrorHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -15,19 +17,20 @@ public class StockItemRestClient {
 
     public StockItemRestClient(){
         restTemplate = new RestTemplate();
+        restTemplate.setErrorHandler(new CustomResponseErrorHandler());
     }
 
 
-    public void loadStockItems(LoadStockItemsHandler handler) {
+    public void loadStockItems(ProcessFinishedHandler handler) {
 
         Thread thread = new Thread(() -> processLoadStockItems(handler));
         thread.start();
     }
 
-    private void processLoadStockItems(LoadStockItemsHandler handler) {
+    private void processLoadStockItems(ProcessFinishedHandler handler) {
 
         ResponseEntity<StockItemDto[]> stockItemResponse = restTemplate.getForEntity(STOCK_ITEMS_URL, StockItemDto[].class);
 
-        handler.handle(Arrays.stream(stockItemResponse.getBody()).toList());
+        handler.handle(stockItemResponse);
     }
 }

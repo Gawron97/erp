@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.dto.EmployeeDto;
 import app.factory.PopUpFactory;
 import app.rest.EmployeesRestClient;
 import app.table.EmployeeTableModel;
@@ -17,11 +18,14 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EmployeesController implements Initializable {
 
@@ -81,9 +85,15 @@ public class EmployeesController implements Initializable {
                     Scene scene = new Scene(loader.load(), 500, 400);
                     employeeEdit.setScene(scene);
                     EditEmployeeController editController = loader.<EditEmployeeController>getController();
-                    editController.loadEmployeeData(selectedEmployee.getIdEmployee(), () -> {
+                    editController.loadEmployeeData(selectedEmployee.getIdEmployee(), isDone -> {
                         waitingPopUp.close();
-                        employeeEdit.show();
+                        if(isDone) {
+                            employeeEdit.show();
+                        } else {
+                            Stage errorPopUp = popUpFactory.createErrorPopUp("Cannot load employee data");
+                            errorPopUp.show();
+                        }
+
                     });
 
 
@@ -125,7 +135,7 @@ public class EmployeesController implements Initializable {
                 return;
             else {
                 try {
-                    Stage waitingPopUp = popUpFactory.createWaitingPopUp("Pobieranie danych o pracowniku");
+                    Stage waitingPopUp = popUpFactory.createWaitingPopUp("Downloading data about employee");
                     waitingPopUp.show();
                     Stage employeeView = new Stage();
                     employeeView.initStyle(StageStyle.UNDECORATED);
@@ -134,9 +144,14 @@ public class EmployeesController implements Initializable {
                     Scene scene = new Scene(loader.load(), 500, 400);
                     employeeView.setScene(scene);
                     ViewEmployeeController viewController = loader.<ViewEmployeeController>getController();
-                    viewController.loadEmployeeData(selectedEmployee.getIdEmployee(), () -> {
+                    viewController.loadEmployeeData(selectedEmployee.getIdEmployee(), isDone-> {
                         waitingPopUp.close();
-                        employeeView.show();
+                        if(isDone) {
+                            employeeView.show();
+                        } else {
+                            Stage errorPopUp = popUpFactory.createErrorPopUp("Failure while downloading employee data");
+                            errorPopUp.show();
+                        }
                     });
 
                 } catch (IOException e) {
@@ -193,14 +208,20 @@ public class EmployeesController implements Initializable {
 
         ObservableList<EmployeeTableModel> data = FXCollections.observableArrayList();
 
-        Stage stage = popUpFactory.createWaitingPopUp("Pobieranie danych o pracownikach");
-        stage.show();
-        employeesRestClient.loadEmployees(employees -> {
+        Stage waitingPopUp = popUpFactory.createWaitingPopUp("Downloading employees");
+        waitingPopUp.show();
+        employeesRestClient.loadEmployees(response -> {
             Platform.runLater(() -> {
-                data.clear();
-                data.addAll(employees.stream().map(employeeDto -> EmployeeTableModel.of(employeeDto)).collect(Collectors.toList()));
-                stage.close();
-                employeeTableView.setItems(data);
+                if(HttpStatus.OK.equals(response.getStatusCode())) {
+                    List<EmployeeDto> employees = Stream.of((EmployeeDto[]) response.getBody()).toList();
+                    data.clear();
+                    data.addAll(employees.stream().map(employeeDto -> EmployeeTableModel.of(employeeDto)).collect(Collectors.toList()));
+                    employeeTableView.setItems(data);
+                } else {
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Failure with downloading employees");
+                    errorPopUp.show();
+                }
+               waitingPopUp.close();
             });
         });
 

@@ -4,7 +4,7 @@ import app.dto.AddressDto;
 import app.dto.CountryDto;
 import app.dto.WarehouseDto;
 import app.factory.PopUpFactory;
-import app.handler.ButtonInitializer;
+import app.handler.OnEndedAction;
 import app.rest.WarehouseRestClient;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -92,28 +92,34 @@ public class EditWarehouseController implements Initializable {
                 waitingPopUp.close();
 
                 if(responseCode.equals(HttpStatus.OK)) {
-                    Stage infoPopUp = popUpFactory.createInfoPopUp("Magazyn zostal zapisany do bazy danych :)",
+                    Stage infoPopUp = popUpFactory.createInfoPopUp("Warehouse edited in database",
                             () -> getStage().close());
 
                     infoPopUp.show();
                 }else{
-                    Stage errorPopUp = popUpFactory.createErrorPopUp("Wystapil blad", () -> getStage().close());
+                    Stage errorPopUp = popUpFactory.createErrorPopUp("Something go wrong while editing warehouse",
+                            () -> getStage().close());
                     errorPopUp.show();
                 }
             });
         });
     }
 
-    public void loadWarehouseData(Integer idWarehouse, ButtonInitializer initializer){
-        warehouseRestClient.loadWarehouse(idWarehouse, warehouseDto -> {
+    public void loadWarehouseData(Integer idWarehouse, OnEndedAction onEndedAction) {
+        warehouseRestClient.loadWarehouse(idWarehouse, responseEntity -> {
             Platform.runLater(() -> {
-                this.idWarehouse = warehouseDto.getIdWarehouse();
-                nameTextField.setText(warehouseDto.getName());
-                cityTextField.setText(warehouseDto.getAddressDto().getCity());
-                streetTextField.setText(warehouseDto.getAddressDto().getStreet());
-                streetNumberTextField.setText(warehouseDto.getAddressDto().getStreetNumber().toString());
-                countryTextField.setText(warehouseDto.getAddressDto().getCountryDto().getCountry());
-                initializer.init();
+                if(!HttpStatus.OK.equals(responseEntity.getStatusCode())) {
+                    onEndedAction.action(false);
+                } else {
+                    WarehouseDto warehouseDto = (WarehouseDto) responseEntity.getBody();
+                    this.idWarehouse = warehouseDto.getIdWarehouse();
+                    nameTextField.setText(warehouseDto.getName());
+                    cityTextField.setText(warehouseDto.getAddressDto().getCity());
+                    streetTextField.setText(warehouseDto.getAddressDto().getStreet());
+                    streetNumberTextField.setText(warehouseDto.getAddressDto().getStreetNumber().toString());
+                    countryTextField.setText(warehouseDto.getAddressDto().getCountryDto().getCountry());
+                    onEndedAction.action(true);
+                }
             });
         });
     }
